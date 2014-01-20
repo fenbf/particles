@@ -43,10 +43,6 @@ public:
 	ParticleUpdater(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
 	virtual ~ParticleUpdater() { }
 
-	//void reset(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
-
-	//virtual void reinit(ParticleData *) { }
-
 	virtual void update(double dt, ParticleData *p) = 0;
 };
 
@@ -68,7 +64,7 @@ public:
 	Vec4d m_minStartVel{ 0.0 };
 	Vec4d m_maxStartVel{ 0.0 };
 public:
-	BasicParticleEmitter(unsigned int idStart, unsigned int idEnd) : BasicParticleEmitter{ idStart, idEnd } { }
+	BasicParticleEmitter(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
 	virtual void update(double dt, ParticleData *p) override;
 };
@@ -78,7 +74,7 @@ class EulerParticleUpdater : public ParticleUpdater
 public:
 	Vec4d m_globalAcceleration;
 public:
-	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd);
+	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
 	virtual void update(double dt, ParticleData *p) override;
 };

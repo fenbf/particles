@@ -13,7 +13,7 @@ inline double randNormal(double a, double b)
 {
 	double u1 = (double)rand() / RAND_MAX;
 	double u2 = (double)rand() / RAND_MAX;
-	double r = sqrt(-2.0*log(u1))*cosf(2.0*(float)3.141592*u2);
+	double r = sqrt(-2.0*log(u1))*cos(2.0*(float)3.141592*u2);
 	return a + (b - a) * (r*0.25 + 0.25);
 }
 
