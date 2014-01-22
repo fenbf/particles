@@ -15,10 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="commonMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="particles.h">
+    <ClInclude Include="..\particlesCode\particles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,7 +23,7 @@
     <ClCompile Include="testMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="particles.cpp">
+    <ClCompile Include="..\particlesCode\particles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
