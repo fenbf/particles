@@ -1,6 +1,6 @@
-/** @file mouseSelection2.cpp
- *  @brief object selection using mouse ray, example code
- *  @date 07 January 2014
+/** @file drawTest.cpp
+ *  @brief draw test for particles
+ *  @date 22 January 2014
  *  @author Bartlomiej Filipek, bfilipek.com
  *  @licence public domain
  */
@@ -10,29 +10,22 @@
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "ShaderLoader.h"
+#include "Particles.h"
+#include "ParticleRenderer.h"
 
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 // globals
 
-std::string Globals::ApplicationWindowName = "Mouse Selection 2";
-
-GLuint vertexBuffer;
+std::string Globals::ApplicationWindowName = "Draw Test Particles";
 ShaderProgram mProgram;
+std::shared_ptr<ParticleSystem> gParticleSystem;
+std::shared_ptr<GLParticleRenderer> gParticleRenderer;
 
 void createVertexBuffers()
 {    
-    float posData[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f
-    };
 
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(posData), posData, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,10 +41,39 @@ bool initApp()
     //
     // shaders
     //
-    if (!shaderLoader::loadAndBuildShaderPairFromFile(&mProgram, "shaders/ex_triangle.vs", "shaders/ex_triangle.fs"))
+    if (!shaderLoader::loadAndBuildShaderPairFromFile(&mProgram, "shaders/drawTest.vs", "shaders/drawTest.fs"))
         return false;
 
     createVertexBuffers();
+
+	const size_t NUM_PARTICLES = 10000;
+	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
+
+	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
+	particleEmitter->m_emitRate = 100.0;
+	particleEmitter->m_pos = Vec4d{ 0.0 };
+	particleEmitter->m_maxStartPosOffset = Vec4d{ 1.0 };
+	particleEmitter->m_minStartCol = Vec4d{ 0.0 };
+	particleEmitter->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
+	particleEmitter->m_minEndCol = Vec4d{ 0.0 };
+	particleEmitter->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
+	particleEmitter->m_minTime = 0.0;
+	particleEmitter->m_maxTime = 2.0;
+	particleEmitter->m_minStartVel = Vec4d{ 0.0 };
+	particleEmitter->m_maxStartVel = Vec4d{ 0.5, 1.0, 0.5, 0.0 };
+	gParticleSystem->addEmitter(particleEmitter);
+
+	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>(0, NUM_PARTICLES);
+	gParticleSystem->addEmitter(timeUpdater);
+
+	auto colorUpdater = std::make_shared<BasicColorParticleUpdater>(0, NUM_PARTICLES);
+	gParticleSystem->addEmitter(colorUpdater);
+
+	auto eulerUpdater = std::make_shared<EulerParticleUpdater>(0, NUM_PARTICLES);
+	gParticleSystem->addEmitter(eulerUpdater);
+
+	gParticleRenderer = std::make_shared<GLParticleRenderer>();
+	gParticleRenderer->generate(gParticleSystem.get(), false);
 
 	return true;
 }
@@ -59,7 +81,7 @@ bool initApp()
 ///////////////////////////////////////////////////////////////////////////////
 void cleanUp()
 {
-    glDeleteBuffers(1, &vertexBuffer);
+	gParticleRenderer->destroy();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,7 +142,8 @@ void processMousePassiveMotion(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
-	
+	gParticleSystem->update((FPType)deltaTime);
+	gParticleRenderer->update();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,11 +153,7 @@ void renderScene()
 
     mProgram.use();
    
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	gParticleRenderer->render();
 
     mProgram.disable();
 }

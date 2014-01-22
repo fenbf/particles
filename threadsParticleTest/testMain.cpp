@@ -40,7 +40,7 @@ int main()
 	auto startTime = std::chrono::high_resolution_clock::now();
 	for (int frame = 0; frame < FRAME_COUNT; ++frame)
 	{
-		particleSystem.update(DELTA_TIME);
+		particleSystem.update((FPType)DELTA_TIME);
 	}
 	auto endTime = std::chrono::high_resolution_clock::now();
 	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() << " miliseconds" << std::endl;

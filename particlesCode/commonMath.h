@@ -46,9 +46,9 @@ struct TVec4
 	
 	static inline void mix3(const TVec4 &a, const TVec4 &b, T t, TVec4 &c)
 	{
-		c.x = a.x*(1.0f - t) + b.x*t;
-		c.y = a.y*(1.0f - t) + b.y*t;
-		c.z = a.z*(1.0f - t) + b.z*t;
+		c.x = a.x*((FPType)1.0 - t) + b.x*t;
+		c.y = a.y*((FPType)1.0 - t) + b.y*t;
+		c.z = a.z*((FPType)1.0 - t) + b.z*t;
 	}
 
 	// simple menthods: operates on x, y, z, w
@@ -59,9 +59,9 @@ struct TVec4
 
 	static inline void mix4(const TVec4 &a, const TVec4 &b, T t, TVec4 &c)
 	{
-		c.x = a.x*(1.0 - t) + b.x*t;
-		c.y = a.y*(1.0 - t) + b.y*t;
-		c.z = a.z*(1.0 - t) + b.z*t;
-		c.w = a.w*(1.0 - t) + b.w*t;
+		c.x = a.x*((FPType)1.0 - t) + b.x*t;
+		c.y = a.y*((FPType)1.0 - t) + b.y*t;
+		c.z = a.z*((FPType)1.0 - t) + b.z*t;
+		c.w = a.w*((FPType)1.0 - t) + b.w*t;
 	}
 };

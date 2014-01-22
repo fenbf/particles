@@ -4,7 +4,8 @@
 #include <memory>
 #include "commonMath.h"
 
-typedef TVec4<double> Vec4d;
+typedef float FPType;
+typedef TVec4<FPType> Vec4d;
 
 class ParticleData
 {
@@ -43,13 +44,13 @@ public:
 	ParticleUpdater(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
 	virtual ~ParticleUpdater() { }
 
-	virtual void update(double dt, ParticleData *p) = 0;
+	virtual void update(FPType dt, ParticleData *p) = 0;
 };
 
 class BasicParticleEmitter : public ParticleUpdater
 {
 public:
-	double m_emitRate{ 0.0 };
+	FPType m_emitRate{ 0.0 };
 	Vec4d m_pos{ 0.0 };
 	Vec4d m_maxStartPosOffset{ 0.0 };
 
@@ -58,15 +59,15 @@ public:
 	Vec4d m_minEndCol{ 0.0 };
 	Vec4d m_maxEndCol{ 0.0 };
 
-	double m_minTime{ 0.0 };
-	double m_maxTime{ 0.0 };
+	FPType m_minTime{ 0.0 };
+	FPType m_maxTime{ 0.0 };
 
 	Vec4d m_minStartVel{ 0.0 };
 	Vec4d m_maxStartVel{ 0.0 };
 public:
 	BasicParticleEmitter(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
-	virtual void update(double dt, ParticleData *p) override;
+	virtual void update(FPType dt, ParticleData *p) override;
 };
 
 class EulerParticleUpdater : public ParticleUpdater
@@ -76,7 +77,7 @@ public:
 public:
 	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
-	virtual void update(double dt, ParticleData *p) override;
+	virtual void update(FPType dt, ParticleData *p) override;
 };
 
 class BasicColorParticleUpdater : public ParticleUpdater
@@ -84,7 +85,7 @@ class BasicColorParticleUpdater : public ParticleUpdater
 public:
 	BasicColorParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
 
-	virtual void update(double dt, ParticleData *p) override
+	virtual void update(FPType dt, ParticleData *p) override
 	{
 		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
 		{
@@ -98,14 +99,14 @@ class BasicTimeParticleUpdater : public ParticleUpdater
 public:
 	BasicTimeParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
 
-	virtual void update(double dt, ParticleData *p) override
+	virtual void update(FPType dt, ParticleData *p) override
 	{
 		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
 		{
 			p->m_time[i].x -= dt;
 			// interpolation: from 0 (start of life) till 1 (end of life)
-			p->m_time[i].z = 1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is max life time
-			p->m_alive[i] = p->m_alive[i] && (p->m_time[i].x > 0.0);
+			p->m_time[i].z = (FPType)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is max life time
+			p->m_alive[i] = p->m_alive[i] && (p->m_time[i].x >(FPType)0.0);
 		}
 	}
 };
@@ -128,7 +129,7 @@ public:
 	ParticleSystem(const ParticleSystem &) = delete;
 	ParticleSystem &operator=(const ParticleSystem &) = delete;
 
-	virtual void update(double dt);
+	virtual void update(FPType dt);
 
 	virtual size_t numAllParticles() const { return m_count; }
 	virtual size_t numAliveParticles() const { return m_particles.m_countAlive; }

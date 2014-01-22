@@ -56,7 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\commonCode\;..\ext\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\commonCode\;..\ext\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -101,6 +101,8 @@
     <ClCompile Include="..\commonCode\Shader.cpp" />
     <ClCompile Include="..\commonCode\ShaderLoader.cpp" />
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
+    <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
+    <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="drawTest.cpp" />
     <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
@@ -113,6 +115,8 @@
     <ClInclude Include="..\commonCode\Shader.h" />
     <ClInclude Include="..\commonCode\ShaderLoader.h" />
     <ClInclude Include="..\commonCode\ShaderProgram.h" />
+    <ClInclude Include="..\particlesCode\particleRenderer.h" />
+    <ClInclude Include="..\particlesCode\particles.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

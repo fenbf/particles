@@ -2,30 +2,30 @@
 #include <assert.h>
 #include <algorithm>
 
-//extern TVec4<double> Vec4d;
+//extern TVec4<FPType> Vec4d;
 
-inline double interpolateInRange(double a, double b, float p)
+inline FPType interpolateInRange(FPType a, FPType b, float p)
 {
 	return a + p * (b - a);
 }
 
-inline double randNormal(double a, double b)
+inline FPType randNormal(FPType a, FPType b)
 {
-	double u1 = (double)rand() / RAND_MAX;
-	double u2 = (double)rand() / RAND_MAX;
-	double r = sqrt(-2.0*log(u1))*cos(2.0*(float)3.141592*u2);
-	return a + (b - a) * (r*0.25 + 0.25);
+	FPType u1 = (FPType)rand() / RAND_MAX;
+	FPType u2 = (FPType)rand() / RAND_MAX;
+	FPType r = (FPType)sqrt(-(FPType)2.0*(FPType)log(u1))*(FPType)cos((FPType)2.0*(FPType)3.141592*u2);
+	return a + (b - a) * (r*(FPType)0.25 + (FPType)0.25);
 }
 
-inline double randLinear(double a, double b)
+inline FPType randLinear(FPType a, FPType b)
 {
-	double u1 = (double)rand() / RAND_MAX;
+	FPType u1 = (FPType)rand() / RAND_MAX;
 	return a + (b - a) * u1;
 }
 
-inline double randNormalOffset(double a, double b)
+inline FPType randNormalOffset(FPType a, FPType b)
 {
-	return (double)a + randNormal(0.0, b);
+	return (FPType)a + randNormal(0.0, b);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ size_t ParticleData::computeMemoryUsage(const ParticleData &p)
 	return p.m_count * (7 * sizeof(Vec4d)+sizeof(bool)) + sizeof(size_t)* 2; 
 }
 
-void BasicParticleEmitter::update(double dt, ParticleData *p)
+void BasicParticleEmitter::update(FPType dt, ParticleData *p)
 {
 	const int maxNewParticles = (int)(dt*m_emitRate);
 	int newParticles = 0;
@@ -90,7 +90,7 @@ void BasicParticleEmitter::update(double dt, ParticleData *p)
 			p->m_pos[i].x = randLinear(posMin.x, posMax.x);
 			p->m_pos[i].y = randLinear(posMin.y, posMax.y);
 			p->m_pos[i].z = randLinear(posMin.z, posMax.z);
-			p->m_pos[i].w = 1.0;
+			p->m_pos[i].w = (FPType)1.0;
 
 			p->m_startCol[i].r = randLinear(m_minStartCol.r, m_maxStartCol.r);
 			p->m_startCol[i].g = randLinear(m_minStartCol.g, m_maxStartCol.g);
@@ -105,11 +105,11 @@ void BasicParticleEmitter::update(double dt, ParticleData *p)
 			p->m_vel[i].x = randLinear(m_minStartVel.x, m_maxStartVel.x);
 			p->m_vel[i].y = randLinear(m_minStartVel.y, m_maxStartVel.y);
 			p->m_vel[i].z = randLinear(m_minStartVel.z, m_maxStartVel.z);
-			p->m_vel[i].w = 0.0;			
+			p->m_vel[i].w = (FPType)0.0;
 
 			p->m_time[i].x = p->m_time[i].y = randLinear(m_minTime, m_maxTime);
-			p->m_time[i].z = 0.0;
-			p->m_time[i].w = 1.0 / p->m_time[i].x;
+			p->m_time[i].z = (FPType)0.0;
+			p->m_time[i].w = (FPType)1.0 / p->m_time[i].x;
 
 			p->m_alive[i] = true;
 
@@ -118,7 +118,7 @@ void BasicParticleEmitter::update(double dt, ParticleData *p)
 	}
 }
 
-void EulerParticleUpdater::update(double dt, ParticleData *p)
+void EulerParticleUpdater::update(FPType dt, ParticleData *p)
 {
 	const Vec4d globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z };
 
@@ -154,7 +154,7 @@ ParticleSystem::ParticleSystem(size_t maxCount)
 		alive = false;
 }
 
-void ParticleSystem::update(double dt)
+void ParticleSystem::update(FPType dt)
 {
 	for (auto & em : m_emitters)
 	{
