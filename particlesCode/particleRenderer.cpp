@@ -20,6 +20,18 @@ void GLParticleRenderer::generate(ParticleSystem *sys, bool)
 	glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)* 4 * count, nullptr, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &m_vao);
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
 }
 
 void GLParticleRenderer::destroy()
@@ -57,20 +69,28 @@ void GLParticleRenderer::render()
 {
 	glEnable(GL_POINT_SPRITE);
 	glTexEnvf(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+	glPointSize(64.0f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
+	float att_param[] = { 0.0f, 0.0f, 0.01f, 0.0f };
+	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att_param);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);	
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);	
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	//glBindVertexArray(m_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-
 	const size_t count = m_system->numAliveParticles();
-	glDrawArrays(GL_POINTS, 0, count);
+	if (count > 0)
+		glDrawArrays(GL_POINTS, 0, count);
 
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
+	glBindVertexArray(0);
 	glDisable(GL_POINT_SPRITE);
 }

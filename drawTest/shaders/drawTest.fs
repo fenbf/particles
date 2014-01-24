@@ -1,10 +1,12 @@
 #version 330
 
-out vec4 vFragColor;
+uniform sampler2D tex;
 
-in flat float id;
+in vec4 outColor;
+
+layout ( location = 0 ) out vec4 vFragColor;
 
 void main() 
 {
-	vFragColor = vec4(1.0-id, 1.0, id, 1.0);
+	vFragColor = texture(tex, gl_PointCoord.xy) * outColor;
 }

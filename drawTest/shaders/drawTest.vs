@@ -1,11 +1,15 @@
 #version 330
 
-layout(location=0) in vec4 vVertex;
+uniform mat4 modelviewMat;
+uniform mat4 projectionMat;
 
-out flat float id;
+layout(location = 0) in vec4 vVertex;
+layout(location = 1) in vec4 vColor;
+
+out vec4 outColor;
 
 void main() 
 {
-    gl_Position = vVertex;
-	id = gl_VertexID*0.33;
+    gl_Position = projectionMat * modelviewMat * vVertex;
+	outColor = vColor;
 }

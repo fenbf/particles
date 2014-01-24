@@ -101,6 +101,7 @@
     <ClCompile Include="..\commonCode\Shader.cpp" />
     <ClCompile Include="..\commonCode\ShaderLoader.cpp" />
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
+    <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="drawTest.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="..\commonCode\Shader.h" />
     <ClInclude Include="..\commonCode\ShaderLoader.h" />
     <ClInclude Include="..\commonCode\ShaderProgram.h" />
+    <ClInclude Include="..\commonCode\TextureLoader.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
   </ItemGroup>

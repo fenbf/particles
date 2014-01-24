@@ -73,7 +73,7 @@ public:
 class EulerParticleUpdater : public ParticleUpdater
 {
 public:
-	Vec4d m_globalAcceleration;
+	Vec4d m_globalAcceleration{ 0.0f };
 public:
 	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
@@ -132,7 +132,7 @@ public:
 	virtual void update(FPType dt);
 
 	virtual size_t numAllParticles() const { return m_count; }
-	virtual size_t numAliveParticles() const { return m_particles.m_countAlive; }
+	virtual size_t numAliveParticles() const { return m_aliveParticles.m_countAlive; }
 
 	//void addAttractor(const Vec4d &v) { m_attractors.add(v); }
 	//Vec4d *getAttractor(int id) { return &m_attractors[id]; }
@@ -141,7 +141,7 @@ public:
 	const ParticleUpdater *getEmitter(size_t id) const { return m_emitters[id].get(); }
 
 	void addUpdater(std::shared_ptr<ParticleUpdater> up) { m_updaters.push_back(up); }
-	const ParticleUpdater *getUpdater(size_t id) const { return m_emitters[id].get(); }
+	const ParticleUpdater *getUpdater(size_t id) const { return m_updaters[id].get(); }
 
 	ParticleData *finalData() { return &m_aliveParticles; }
 

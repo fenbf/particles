@@ -19,6 +19,7 @@ protected:
 
 	unsigned int m_bufPos{ 0 };
 	unsigned int m_bufCol{ 0 };
+	unsigned int m_vao{ 0 };
 public:
 	GLParticleRenderer() { }
 	~GLParticleRenderer() { destroy(); }
