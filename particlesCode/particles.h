@@ -105,7 +105,7 @@ public:
 		{
 			p->m_time[i].x -= dt;
 			// interpolation: from 0 (start of life) till 1 (end of life)
-			p->m_time[i].z = (FPType)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is max life time
+			p->m_time[i].z = (FPType)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time
 			p->m_alive[i] = p->m_alive[i] && (p->m_time[i].x >(FPType)0.0);
 		}
 	}
@@ -138,10 +138,10 @@ public:
 	//Vec4d *getAttractor(int id) { return &m_attractors[id]; }
 
 	void addEmitter(std::shared_ptr<ParticleUpdater> em) { m_emitters.push_back(em); }
-	const ParticleUpdater *getEmitter(size_t id) const { return m_emitters[id].get(); }
+	//const ParticleUpdater *getEmitter(size_t id) const { return m_emitters[id].get(); }
 
 	void addUpdater(std::shared_ptr<ParticleUpdater> up) { m_updaters.push_back(up); }
-	const ParticleUpdater *getUpdater(size_t id) const { return m_updaters[id].get(); }
+	//const ParticleUpdater *getUpdater(size_t id) const { return m_updaters[id].get(); }
 
 	ParticleData *finalData() { return &m_aliveParticles; }
 

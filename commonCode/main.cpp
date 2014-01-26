@@ -14,7 +14,7 @@
 	#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )
 #endif
 
-//#define USE_ONLY_CORE_OPENGL_PROFILE
+#define USE_ONLY_CORE_OPENGL_PROFILE
 
 using namespace std;
 

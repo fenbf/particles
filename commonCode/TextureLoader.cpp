@@ -22,7 +22,7 @@ namespace textureLoader
         filename,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_GL_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS
+        /*SOIL_FLAG_GL_MIPMAPS | */SOIL_FLAG_INVERT_Y | SOIL_FLAG_TEXTURE_REPEATS
         );
 
         if (*outTexId == 0)
