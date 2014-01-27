@@ -10,7 +10,12 @@ out vec4 outColor;
 
 void main() 
 {
-    gl_Position = matProjection * matModelview * vVertex;
+    vec4 eyePos = matModelview * gl_Vertex;
+    gl_Position = matProjection * eyePos;
+
 	outColor = vColor;
-	gl_PointSize = 10.0;
+	
+	float dist = dot(eyePos.xyz, eyePos.xyz);
+	float att = sqrt(1.0f / 0.5f*dist);
+	gl_PointSize = 10.0f * att;
 }

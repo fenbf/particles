@@ -6,7 +6,7 @@
 
 #pragma once
 
-//#define _EX_USE_ANTTWEAKBAR
+#define _EX_USE_ANTTWEAKBAR
 #define _EX_SHOW_CONSOLE
 
 #include <string>

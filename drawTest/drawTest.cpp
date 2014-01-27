@@ -23,7 +23,6 @@ using namespace std;
 std::string Globals::ApplicationWindowName = "Draw Test Particles";
 
 ShaderProgram mProgram;
-ShaderProgram mProgramRef;
 std::shared_ptr<ParticleSystem> gParticleSystem;
 std::shared_ptr<GLParticleRenderer> gParticleRenderer;
 
@@ -36,51 +35,11 @@ struct Camera
 	glm::mat4 projectionMatrix;
 } camera;
 
-struct Geometry
-{
-	GLuint vertexBuffer, indexBuffer, colorBuffer;
-	GLuint vao;
-	int numElements;
-	GLuint textureMain;
-	GLuint textureAdditional;
-} geometry;
+
 
 void createVertexBuffers()
 {    
-	float posData[] = {
-		-0.5f, -0.5f, 0.0f, 1.0f,
-		0.0f, 0.5f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.0f, 1.0f
-	};
-	float colData[] = {
-		1.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f
-	};
 
-	glGenVertexArrays(1, &geometry.vao);
-	glBindVertexArray(geometry.vao);
-
-	glGenBuffers(1, &geometry.vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), &posData[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (4)*sizeof(float), (void *)((0)*sizeof(float)));
-
-	glGenBuffers(1, &geometry.colorBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, geometry.colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &colData[0], GL_STATIC_DRAW);
-	
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, (4)*sizeof(float), (void *)((0)*sizeof(float)));
-
-	//glGenBuffers(1, &geometry.indexBuffer);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry.indexBuffer);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, geometry.numElements*sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,16 +120,13 @@ bool initApp()
 
 	camera.cameraPosition[0] = 0.0f;
 	camera.cameraPosition[1] = 0.0f;
-	camera.cameraPosition[2] = 2.0f;
+	camera.cameraPosition[2] = 1.0f;
 
     //
     // shaders
     //
     if (!shaderLoader::loadAndBuildShaderPairFromFile(&mProgram, "shaders/drawTest.vs", "shaders/drawTest.fs"))
         return false;
-
-	if (!shaderLoader::loadAndBuildShaderPairFromFile(&mProgramRef, "shaders/simple.vs", "shaders/simple.fs"))
-		return false;
 
 	//
 	// generate texture:
@@ -188,12 +144,12 @@ bool initApp()
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = 1000;
+	const size_t NUM_PARTICLES = 10000;
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
 	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
-	particleEmitter->m_emitRate = 1000.0;
-	particleEmitter->m_pos = Vec4d{ 0.0 };
+	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.995f;
+	particleEmitter->m_pos = Vec4d{ 0.0, -0.3f, 0.0 };
 	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.0 };
 	particleEmitter->m_minStartCol = Vec4d{ 0.0 };
 	particleEmitter->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
@@ -201,8 +157,8 @@ bool initApp()
 	particleEmitter->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
 	particleEmitter->m_minTime = 0.0;
 	particleEmitter->m_maxTime = 2.0;
-	particleEmitter->m_minStartVel = Vec4d{ -0.1f, 0.1f, -0.1f, 0.0f };
-	particleEmitter->m_maxStartVel = Vec4d{ 0.1f, 1.0f, 0.1f, 0.0f };
+	particleEmitter->m_minStartVel = Vec4d{ -0.3f, 0.1f, -0.3f, 0.0f };
+	particleEmitter->m_maxStartVel = Vec4d{ 0.3f, 0.6f, 0.3f, 0.0f };
 	gParticleSystem->addEmitter(particleEmitter);
 
 	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>(0, NUM_PARTICLES);
@@ -212,7 +168,7 @@ bool initApp()
 	gParticleSystem->addUpdater(colorUpdater);
 
 	auto eulerUpdater = std::make_shared<EulerParticleUpdater>(0, NUM_PARTICLES);
-	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0 };
+	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, -19.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
 
 	//auto myUpdater = std::make_shared<MyUpdater>(0, NUM_PARTICLES);
@@ -229,10 +185,6 @@ void cleanUp()
 {
 	if (gParticleRenderer) gParticleRenderer->destroy();
 	glDeleteTextures(1, &gParticleTexture);
-
-	glDeleteVertexArrays(1, &geometry.vao);
-	glDeleteBuffers(1, &geometry.vertexBuffer);
-	glDeleteBuffers(1, &geometry.indexBuffer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -311,35 +263,14 @@ void renderScene()
 	//
 	camera.modelviewMatrix = glm::lookAt(camera.cameraPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	//mProgramRef.use();
-	//mProgramRef.uniformMatrix4f("matProjection", glm::value_ptr(camera.projectionMatrix));
-	//mProgramRef.uniformMatrix4f("matModelview", glm::value_ptr(camera.modelviewMatrix));
-
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, gParticleTexture);
 
-	//glEnable(GL_POINT_SPRITE);
-	//glTexEnvf(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-	//glPointSize(60.0f);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	mProgram.use();
 	mProgram.uniformMatrix4f("matProjection", glm::value_ptr(camera.projectionMatrix));
 	mProgram.uniformMatrix4f("matModelview", glm::value_ptr(camera.modelviewMatrix));
-
-	glBindVertexArray(geometry.vao);
-	//glBindBuffer(GL_ARRAY_BUFFER, geometry.vertexBuffer);
-	//glDrawArrays(GL_POINTS, 0, 3);
-	glBindVertexArray(0);
-
-	//mProgramRef.disable();
-
-	//
-	// shader setup
-	//
-	//mProgram.use();
-	//mProgram.uniformMatrix4f("modelviewMat", glm::value_ptr(camera.projectionMatrix));
-	//mProgram.uniformMatrix4f("projectionMat", glm::value_ptr(camera.modelviewMatrix));
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
