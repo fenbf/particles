@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -79,7 +79,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -102,6 +102,8 @@
     <ClCompile Include="..\commonCode\ShaderLoader.cpp" />
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
+    <ClCompile Include="..\commonCode\TimeQuery.cpp" />
+    <ClCompile Include="..\commonCode\UIWrapper.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="drawTest.cpp" />
@@ -117,6 +119,8 @@
     <ClInclude Include="..\commonCode\ShaderLoader.h" />
     <ClInclude Include="..\commonCode\ShaderProgram.h" />
     <ClInclude Include="..\commonCode\TextureLoader.h" />
+    <ClInclude Include="..\commonCode\TimeQuery.h" />
+    <ClInclude Include="..\commonCode\UIWrapper.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
   </ItemGroup>

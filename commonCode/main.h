@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 #include <memory>
+#include <chrono>
 #include "gl_comp_3_3.h"
 #include "wgl_wgl.h"
 #include "freeglut.h"

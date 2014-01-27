@@ -11,9 +11,11 @@
 #include "ShaderProgram.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
+#include "UIWrapper.h"
 
 #include "Particles.h"
 #include "ParticleRenderer.h"
+#include "TimeQuery.h"
 
 using namespace std;
 
@@ -35,12 +37,33 @@ struct Camera
 	glm::mat4 projectionMatrix;
 } camera;
 
+class CpuTimeQuery
+{
+public:
+	double m_time;
+private:
+	std::chrono::time_point<std::chrono::high_resolution_clock> cpuTimePointStart;
 
+public:
+	void begin()
+	{
+		cpuTimePointStart = std::chrono::high_resolution_clock::now();
+	}
 
-void createVertexBuffers()
-{    
+	void end()
+	{
+		auto diff = std::chrono::high_resolution_clock::now() - cpuTimePointStart;
+		auto mili = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
+		m_time = 0.5*(m_time + (double)mili);
+	}
+};
 
-}
+CpuTimeQuery cpuParticlesUpdate;
+CpuTimeQuery cpuBuffersUpdate;
+TimerQuery gpuUpdate;
+double gpuUpdateTime = 0;
+TimerQuery gpuRender;
+double gpuRenderTime = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -138,13 +161,10 @@ bool initApp()
 	mProgram.uniform1i("tex", 0);
 	mProgram.disable();
 
-    createVertexBuffers();
-
-
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = 10000;
+	const size_t NUM_PARTICLES = 100000;
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
 	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
@@ -176,6 +196,15 @@ bool initApp()
 
 	gParticleRenderer = std::make_shared<GLParticleRenderer>();
 	gParticleRenderer->generate(gParticleSystem.get(), false);
+
+	gpuUpdate.init();
+	gpuRender.init();
+
+	ui::AddReadonlyVar<double>("cpu particles", &cpuParticlesUpdate.m_time, "precision=3");
+	ui::AddReadonlyVar<double>("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3");
+
+	ui::AddReadonlyVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3");
+	ui::AddReadonlyVar<double>("gpu render", &gpuRender.getTime(), "precision=3");
 
 	return true;
 }
@@ -248,8 +277,16 @@ void processMousePassiveMotion(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
-	gParticleSystem->update((FPType)deltaTime);
-	gParticleRenderer->update();
+	cpuParticlesUpdate.begin();
+		gParticleSystem->update((FPType)deltaTime);
+	cpuParticlesUpdate.end();
+
+	cpuBuffersUpdate.begin();
+		gpuUpdate.begin();
+			gParticleRenderer->update();
+		gpuUpdate.end();		
+	cpuBuffersUpdate.end();
+	gpuUpdate.updateResults(TimerQuery::WaitOption::WaitForResults);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -275,9 +312,13 @@ void renderScene()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	gParticleRenderer->render();
+	gpuRender.begin();
+		gParticleRenderer->render();
+	gpuRender.end();
 
 	glDisable(GL_BLEND);
 
     mProgram.disable();
+
+	gpuRender.updateResults(TimerQuery::WaitOption::WaitForResults);
 }

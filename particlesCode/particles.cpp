@@ -57,12 +57,12 @@ void ParticleData::copyOnlyAlive(const ParticleData *source, ParticleData *desti
 		{
 			destination->m_pos[id] = source->m_pos[i];
 			destination->m_col[id] = source->m_col[i];
-			/*destination->m_startCol[id] = source->m_startCol[i];
+			destination->m_startCol[id] = source->m_startCol[i];
 			destination->m_endCol[id] = source->m_endCol[i];
 			destination->m_vel[id] = source->m_vel[i];
 			destination->m_acc[id] = source->m_acc[i];
 			destination->m_time[id] = source->m_time[i];
-			destination->m_alive[id] = true;*/
+			destination->m_alive[id] = true;
 			id++;
 		}
 	}

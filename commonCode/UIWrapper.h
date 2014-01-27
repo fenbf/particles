@@ -14,16 +14,21 @@ namespace ui
     void AddTweakInt(const char *name, int *var, const char *def);
     void AddTweakBool(const char *name, bool *var, const char *def);
     void AddTweakFloat(const char *name, float *var, const char *def);
+	void AddTweakDouble(const char *name, double *var, const char *def);
     void AddTweakColor3f(const char *name, float *col, const char *def);
     void AddTweakColor4f(const char *name, float *col, const char *def);
     void AddTweakDir3f(const char *name, float *dir, const char *def);
     // todo: use templates?
+	template <typename T> void AddReadonlyVar(const char *name, T *var, const char *def);
 #else
     inline void AddTweakInt(const char *, int *, const char *) { }
     inline void AddTweakBool(const char *, bool *, const char *) { }
     inline void AddTweakFloat(const char *, float *, const char *) { }
+	inline void AddTweakDouble(const char *name, double *var, const char *def) { }
     inline void AddTweakColor3f(const char *, float *, const char *) { }
     inline void AddTweakColor4f(const char *, float *, const char *) { }
     inline void AddTweakDir3f(const char *, float *, const char *) { }
+	
+	inline template <typename T> void AddReadonlyVar(const char *name, T *var, const char *def) { }
 #endif
 }
