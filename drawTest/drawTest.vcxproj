@@ -103,9 +103,9 @@
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
-    <ClCompile Include="..\commonCode\UIWrapper.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
+    <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
     <ClCompile Include="drawTest.cpp" />
     <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
@@ -123,6 +123,7 @@
     <ClInclude Include="..\commonCode\UIWrapper.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
+    <ClInclude Include="..\particlesCode\particleUpdaters.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

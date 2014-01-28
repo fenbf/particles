@@ -14,6 +14,7 @@
 #include "UIWrapper.h"
 
 #include "Particles.h"
+#include "ParticleUpdaters.h"
 #include "ParticleRenderer.h"
 #include "TimeQuery.h"
 
@@ -27,6 +28,7 @@ std::string Globals::ApplicationWindowName = "Draw Test Particles";
 ShaderProgram mProgram;
 std::shared_ptr<ParticleSystem> gParticleSystem;
 std::shared_ptr<GLParticleRenderer> gParticleRenderer;
+int gNumParticles = 0;
 
 unsigned int gParticleTexture = 0;
 
@@ -66,73 +68,6 @@ TimerQuery gpuRender;
 double gpuRenderTime = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
-
-inline FPType randLinear(FPType a, FPType b)
-{
-	FPType u1 = (FPType)rand() / RAND_MAX;
-	return a + (b - a) * u1;
-}
-
-class MyUpdater : public ParticleUpdater
-{
-public:
-	MyUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
-
-	virtual void update(FPType dt, ParticleData *p) override
-	{
-		const int maxNewParticles = (int)(dt*m_idEnd*0.5);
-		int newParticles = 0;
-
-		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
-		{
-			if (!p->m_alive[i] && newParticles < maxNewParticles)
-			{
-				p->m_pos[i].x = 0.0f;
-				p->m_pos[i].y = 0.0f;
-				p->m_pos[i].z = 0.0f;
-				p->m_pos[i].w = (FPType)1.0;
-
-				p->m_startCol[i].r = randLinear(0.0f, 1.0f);
-				p->m_startCol[i].g = randLinear(0.0f, 1.0f);
-				p->m_startCol[i].b = randLinear(0.0f, 1.0f);
-				p->m_startCol[i].a = 1.0f;// randLinear(0.9f, 1.0f);
-
-				p->m_endCol[i].r = randLinear(0.0f, 1.0f);
-				p->m_endCol[i].g = randLinear(0.0f, 1.0f);
-				p->m_endCol[i].b = randLinear(0.0f, 1.0f);
-				p->m_endCol[i].a = 0.0f;
-
-				p->m_vel[i].x = 0.0;
-				p->m_vel[i].y = 0.5;
-				p->m_vel[i].z = 0.0;
-				p->m_vel[i].w = (FPType)0.0;
-
-				p->m_time[i].x = p->m_time[i].y = randLinear(1.0, 4.0);
-				p->m_time[i].z = (FPType)0.0;
-				p->m_time[i].w = (FPType)1.0 / p->m_time[i].x;
-
-				p->m_alive[i] = true;
-
-				++newParticles;
-			}
-		}
-		
-		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
-		{
-			p->m_time[i].x -= dt;
-			// interpolation: from 0 (start of life) till 1 (end of life)
-			p->m_time[i].z = (FPType)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time
-			p->m_alive[i] = p->m_alive[i] && (p->m_time[i].x >(FPType)0.0);
-
-			p->m_pos[i].x += p->m_vel[i].x*dt;
-			p->m_pos[i].y += p->m_vel[i].y*dt;
-			p->m_pos[i].z += p->m_vel[i].z*dt;
-
-			Vec4d::mix4(p->m_startCol[i], p->m_endCol[i], p->m_time[i].z, p->m_col[i]);
-		}
-	}
-};
-
 bool initApp() 
 {
     //
@@ -165,6 +100,7 @@ bool initApp()
 	// particles
 	//
 	const size_t NUM_PARTICLES = 100000;
+	gNumParticles = NUM_PARTICLES;
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
 	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
@@ -200,11 +136,12 @@ bool initApp()
 	gpuUpdate.init();
 	gpuRender.init();
 
-	ui::AddReadonlyVar<double>("cpu particles", &cpuParticlesUpdate.m_time, "precision=3");
-	ui::AddReadonlyVar<double>("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3");
+	ui::AddVar<int>("particles", &gNumParticles, "");
+	ui::AddVar<double>("cpu particles", &cpuParticlesUpdate.m_time, "precision=3 group=timers");
+	ui::AddVar<double>("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3 group=timers");
 
-	ui::AddReadonlyVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3");
-	ui::AddReadonlyVar<double>("gpu render", &gpuRender.getTime(), "precision=3");
+	ui::AddVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
+	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");
 
 	return true;
 }
