@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <memory>
-#include <glm\glm.hpp>
+#include <glm/vec4.hpp>
 
 typedef glm::vec4 Vec4d;
 
