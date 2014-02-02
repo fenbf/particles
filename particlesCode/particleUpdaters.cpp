@@ -26,13 +26,13 @@ inline FPType randNormalOffset(FPType a, FPType b)
 	return (FPType)a + randNormal(0.0, b);
 }
 
-void BasicParticleEmitter::update(FPType dt, ParticleData *p)
+void BasicParticleEmitter::update(double dt, ParticleData *p)
 {
 	const int maxNewParticles = (int)(dt*m_emitRate);
 	int newParticles = 0;
 
-	Vec4d posMin { m_pos.x - m_maxStartPosOffset.x, m_pos.y - m_maxStartPosOffset.y, m_pos.z - m_maxStartPosOffset.z };
-	Vec4d posMax { m_pos.x + m_maxStartPosOffset.x, m_pos.y + m_maxStartPosOffset.y, m_pos.z + m_maxStartPosOffset.z };
+	Vec4d posMin { m_pos.x - m_maxStartPosOffset.x, m_pos.y - m_maxStartPosOffset.y, m_pos.z - m_maxStartPosOffset.z, 0.0 };
+	Vec4d posMax { m_pos.x + m_maxStartPosOffset.x, m_pos.y + m_maxStartPosOffset.y, m_pos.z + m_maxStartPosOffset.z, 0.0 };
 
 	for (unsigned int i = m_idStart; i < m_idEnd; ++i)
 	{
@@ -69,18 +69,18 @@ void BasicParticleEmitter::update(FPType dt, ParticleData *p)
 	}
 }
 
-void EulerParticleUpdater::update(FPType dt, ParticleData *p)
+void EulerParticleUpdater::update(double dt, ParticleData *p)
 {
-	const Vec4d globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z };
+	const Vec4d globalA { dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
 
 	for (size_t i = m_idStart; i < m_idEnd; ++i)
-		p->m_acc[i].add3(globalA);
+		p->m_acc[i] += globalA;
 
 	for (size_t i = m_idStart; i < m_idEnd; ++i)
 	{
-		p->m_vel[i].x += dt * p->m_acc[i].x;
-		p->m_vel[i].y += dt * p->m_acc[i].y;
-		p->m_vel[i].z += dt * p->m_acc[i].z;
+		p->m_vel[i].x += (FPType)dt * p->m_acc[i].x;
+		p->m_vel[i].y += (FPType)dt * p->m_acc[i].y;
+		p->m_vel[i].z += (FPType)dt * p->m_acc[i].z;
 	}
 
 	for (size_t i = m_idStart; i < m_idEnd; ++i)

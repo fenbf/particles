@@ -64,7 +64,7 @@ ParticleSystem::ParticleSystem(size_t maxCount)
 		alive = false;
 }
 
-void ParticleSystem::update(FPType dt)
+void ParticleSystem::update(double dt)
 {
 	for (auto & em : m_emitters)
 	{
@@ -73,7 +73,7 @@ void ParticleSystem::update(FPType dt)
 
 	for (size_t i = 0; i < m_count; ++i)
 	{
-		m_particles.m_acc[i].setAll(0.0);
+		m_particles.m_acc[i] = glm::vec4(0.0f);
 	}
 
 	for (auto & up : m_updaters)

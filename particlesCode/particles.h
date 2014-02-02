@@ -2,10 +2,9 @@
 
 #include <vector>
 #include <memory>
-#include "commonMath.h"
+#include <glm\glm.hpp>
 
-typedef float FPType;
-typedef TVec4<FPType> Vec4d;
+typedef glm::vec4 Vec4d;
 
 class ParticleData
 {
@@ -44,7 +43,7 @@ public:
 	ParticleUpdater(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
 	virtual ~ParticleUpdater() { }
 
-	virtual void update(FPType dt, ParticleData *p) = 0;
+	virtual void update(double dt, ParticleData *p) = 0;
 };
 
 class ParticleSystem
@@ -65,7 +64,7 @@ public:
 	ParticleSystem(const ParticleSystem &) = delete;
 	ParticleSystem &operator=(const ParticleSystem &) = delete;
 
-	virtual void update(FPType dt);
+	virtual void update(double dt);
 
 	virtual size_t numAllParticles() const { return m_count; }
 	virtual size_t numAliveParticles() const { return m_aliveParticles.m_countAlive; }

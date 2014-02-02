@@ -105,11 +105,11 @@ bool initApp()
 
 	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
 	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.995f;
-	particleEmitter->m_pos = Vec4d{ 0.0, -0.3f, 0.0 };
-	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.0 };
-	particleEmitter->m_minStartCol = Vec4d{ 0.0 };
+	particleEmitter->m_pos = Vec4d{ 0.0, -0.3f, 0.0, 0.0 };
+	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+	particleEmitter->m_minStartCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	particleEmitter->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
-	particleEmitter->m_minEndCol = Vec4d{ 0.0 };
+	particleEmitter->m_minEndCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	particleEmitter->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
 	particleEmitter->m_minTime = 0.0;
 	particleEmitter->m_maxTime = 2.0;
@@ -124,7 +124,7 @@ bool initApp()
 	gParticleSystem->addUpdater(colorUpdater);
 
 	auto eulerUpdater = std::make_shared<EulerParticleUpdater>(0, NUM_PARTICLES);
-	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, -19.0, 0.0 };
+	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, -19.0, 0.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
 
 	//auto myUpdater = std::make_shared<MyUpdater>(0, NUM_PARTICLES);

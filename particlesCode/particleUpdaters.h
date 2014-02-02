@@ -4,6 +4,8 @@
 #include "commonMath.h"
 #include "particles.h"
 
+typedef glm::vec4::value_type FPType;
+
 class BasicParticleEmitter : public ParticleUpdater
 {
 public:
@@ -24,7 +26,7 @@ public:
 public:
 	BasicParticleEmitter(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
-	virtual void update(FPType dt, ParticleData *p) override;
+	virtual void update(double dt, ParticleData *p) override;
 };
 
 class EulerParticleUpdater : public ParticleUpdater
@@ -34,7 +36,7 @@ public:
 public:
 	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
 
-	virtual void update(FPType dt, ParticleData *p) override;
+	virtual void update(double dt, ParticleData *p) override;
 };
 
 class BasicColorParticleUpdater : public ParticleUpdater
@@ -42,11 +44,11 @@ class BasicColorParticleUpdater : public ParticleUpdater
 public:
 	BasicColorParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
 
-	virtual void update(FPType dt, ParticleData *p) override
+	virtual void update(double dt, ParticleData *p) override
 	{
 		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
 		{
-			Vec4d::mix4(p->m_startCol[i], p->m_endCol[i], p->m_time[i].z, p->m_col[i]);
+			p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], p->m_time[i].z);
 		}
 	}
 };
@@ -56,7 +58,7 @@ class BasicTimeParticleUpdater : public ParticleUpdater
 public:
 	BasicTimeParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
 
-	virtual void update(FPType dt, ParticleData *p) override
+	virtual void update(double dt, ParticleData *p) override
 	{
 		for (unsigned int i = m_idStart; i < m_idEnd; ++i)
 		{
