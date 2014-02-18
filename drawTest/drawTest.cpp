@@ -29,6 +29,7 @@ ShaderProgram mProgram;
 std::shared_ptr<ParticleSystem> gParticleSystem;
 std::shared_ptr<GLParticleRenderer> gParticleRenderer;
 int gNumParticles = 0;
+int gNumAlive = 0;
 
 unsigned int gParticleTexture = 0;
 
@@ -104,17 +105,17 @@ bool initApp()
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
 	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
-	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.995f;
-	particleEmitter->m_pos = Vec4d{ 0.0, -0.3f, 0.0, 0.0 };
-	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.195f;
+	particleEmitter->m_pos = Vec4d{ 0.0, -0.0f, 0.0, 0.0 };
+	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.1, 0.1, 0.0, 0.0 };
 	particleEmitter->m_minStartCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	particleEmitter->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
 	particleEmitter->m_minEndCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	particleEmitter->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
-	particleEmitter->m_minTime = 0.0;
-	particleEmitter->m_maxTime = 2.0;
-	particleEmitter->m_minStartVel = Vec4d{ -0.3f, 0.1f, -0.3f, 0.0f };
-	particleEmitter->m_maxStartVel = Vec4d{ 0.3f, 0.6f, 0.3f, 0.0f };
+	particleEmitter->m_minTime = 1.0;
+	particleEmitter->m_maxTime = 3.0;
+	particleEmitter->m_minStartVel = Vec4d{ -0.1f, -0.1f, 0.05f, 0.0f };
+	particleEmitter->m_maxStartVel = Vec4d{ 0.1f, 0.1f, 0.25f, 0.0f };
 	gParticleSystem->addEmitter(particleEmitter);
 
 	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>(0, NUM_PARTICLES);
@@ -124,7 +125,7 @@ bool initApp()
 	gParticleSystem->addUpdater(colorUpdater);
 
 	auto eulerUpdater = std::make_shared<EulerParticleUpdater>(0, NUM_PARTICLES);
-	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, -19.0, 0.0, 0.0 };
+	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
 
 	//auto myUpdater = std::make_shared<MyUpdater>(0, NUM_PARTICLES);
@@ -137,11 +138,12 @@ bool initApp()
 	gpuRender.init();
 
 	ui::AddVar<int>("particles", &gNumParticles, "");
+	ui::AddVar<int>("alive", &gNumAlive, "");
 	ui::AddVar<double>("cpu particles", &cpuParticlesUpdate.m_time, "precision=3 group=timers");
 	ui::AddVar<double>("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3 group=timers");
 
 	ui::AddVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
-	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");
+	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");	
 
 	return true;
 }
@@ -216,6 +218,7 @@ void updateScene(double deltaTime)
 {
 	cpuParticlesUpdate.begin();
 		gParticleSystem->update((FPType)deltaTime);
+		gNumAlive = gParticleSystem->numAliveParticles();
 	cpuParticlesUpdate.end();
 
 	cpuBuffersUpdate.begin();
