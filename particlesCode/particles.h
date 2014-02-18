@@ -2,25 +2,24 @@
 
 #include <vector>
 #include <memory>
-#include "commonMath.h"
+#include <glm/vec4.hpp>
 
-typedef float FPType;
-typedef TVec4<FPType> Vec4d;
+typedef glm::vec4 Vec4d;
 
 class ParticleData
 {
 public:
-	std::vector<Vec4d> m_pos;
-	std::vector<Vec4d> m_col;
-	std::vector<Vec4d> m_startCol;
-	std::vector<Vec4d> m_endCol;	
-	std::vector<Vec4d> m_vel;
-	std::vector<Vec4d> m_acc;
-	std::vector<Vec4d> m_time;
-	std::vector<bool> m_alive;
+	std::unique_ptr<Vec4d[]> m_pos;
+	std::unique_ptr<Vec4d[]> m_col;
+	std::unique_ptr<Vec4d[]> m_startCol;
+	std::unique_ptr<Vec4d[]> m_endCol;
+	std::unique_ptr<Vec4d[]> m_vel;
+	std::unique_ptr<Vec4d[]> m_acc;
+	std::unique_ptr<Vec4d[]> m_time;
+	std::unique_ptr<bool[]>  m_alive;
 
-	size_t m_count = 0;
-	size_t m_countAlive = 0;
+	size_t m_count{ 0 };
+	size_t m_countAlive{ 0 };
 public:
 	ParticleData() { }
 	explicit ParticleData(size_t maxCount) { generate(maxCount); }
@@ -30,6 +29,9 @@ public:
 	ParticleData &operator=(const ParticleData &) = delete;
 
 	void generate(size_t maxSize);
+	void kill(size_t id);
+	void wake(size_t id);
+	void swapData(size_t a, size_t b);
 
 	static void copyOnlyAlive(const ParticleData *source, ParticleData *destination);
 	static size_t computeMemoryUsage(const ParticleData &p);
@@ -44,7 +46,7 @@ public:
 	ParticleUpdater(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
 	virtual ~ParticleUpdater() { }
 
-	virtual void update(FPType dt, ParticleData *p) = 0;
+	virtual void update(double dt, ParticleData *p) = 0;
 };
 
 class ParticleSystem
@@ -65,7 +67,7 @@ public:
 	ParticleSystem(const ParticleSystem &) = delete;
 	ParticleSystem &operator=(const ParticleSystem &) = delete;
 
-	virtual void update(FPType dt);
+	virtual void update(double dt);
 
 	virtual size_t numAllParticles() const { return m_count; }
 	virtual size_t numAliveParticles() const { return m_aliveParticles.m_countAlive; }

@@ -6,19 +6,51 @@
 ////////////////////////////////////////////////////////////////////////////////
 // ParticleData class 
 
-void ParticleData::generate(size_t maxSize)
+void ParticleData::generate(size_t maxSize) 
 {
 	m_count = maxSize;
 	m_countAlive = 0;
 
-	m_pos.resize(m_count);
-	m_col.resize(m_count);
-	m_startCol.resize(m_count);
-	m_endCol.resize(m_count);
-	m_vel.resize(m_count);
-	m_acc.resize(m_count);
-	m_time.resize(m_count);
-	m_alive.resize(m_count);
+	m_pos.reset(new Vec4d[maxSize]);
+	m_col.reset(new Vec4d[maxSize]);
+	m_startCol.reset(new Vec4d[maxSize]);
+	m_endCol.reset(new Vec4d[maxSize]);
+	m_vel.reset(new Vec4d[maxSize]);
+	m_acc.reset(new Vec4d[maxSize]);
+	m_time.reset(new Vec4d[maxSize]);
+	m_alive.reset(new bool[maxSize]);
+}
+
+void ParticleData::kill(size_t id)
+{
+	if (m_countAlive > 0)
+	{
+		m_alive[id] = false;
+		swapData(id, m_countAlive - 1);
+		m_countAlive--;
+	}
+}
+
+void ParticleData::wake(size_t id)
+{
+	if (m_countAlive < m_count)
+	{
+		m_alive[id] = true;
+		swapData(id, m_countAlive);
+		m_countAlive++;
+	}
+}
+
+void ParticleData::swapData(size_t a, size_t b)
+{
+	std::swap(m_pos[a], m_pos[b]);
+	std::swap(m_col[a], m_col[b]);
+	std::swap(m_startCol[a], m_startCol[b]);
+	std::swap(m_endCol[a], m_endCol[b]);
+	std::swap(m_vel[a], m_vel[b]);
+	std::swap(m_acc[a], m_acc[b]);
+	std::swap(m_time[a], m_time[b]);
+	std::swap(m_alive[a], m_alive[b]);
 }
 
 void ParticleData::copyOnlyAlive(const ParticleData *source, ParticleData *destination)
@@ -26,9 +58,9 @@ void ParticleData::copyOnlyAlive(const ParticleData *source, ParticleData *desti
 	assert(source->m_count == destination->m_count);
 
 	size_t id = 0;
-	for (size_t i = 0; i < source->m_count; ++i)
+	for (size_t i = 0; i < source->m_countAlive; ++i)
 	{
-		if (source->m_alive[i])
+		//if (source->m_alive[i])
 		{
 			destination->m_pos[id] = source->m_pos[i];
 			destination->m_col[id] = source->m_col[i];
@@ -60,11 +92,11 @@ ParticleSystem::ParticleSystem(size_t maxCount)
 	m_particles.generate(maxCount);
 	m_aliveParticles.generate(maxCount);
 
-	for (auto &alive : m_particles.m_alive)
-		alive = false;
+	for (size_t i = 0; i < maxCount; ++i)
+		m_particles.m_alive[i] = false;
 }
 
-void ParticleSystem::update(FPType dt)
+void ParticleSystem::update(double dt)
 {
 	for (auto & em : m_emitters)
 	{
@@ -73,7 +105,7 @@ void ParticleSystem::update(FPType dt)
 
 	for (size_t i = 0; i < m_count; ++i)
 	{
-		m_particles.m_acc[i].setAll(0.0);
+		m_particles.m_acc[i] = glm::vec4(0.0f);
 	}
 
 	for (auto & up : m_updaters)
