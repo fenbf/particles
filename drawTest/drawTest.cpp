@@ -104,7 +104,7 @@ bool initApp()
 	gNumParticles = NUM_PARTICLES;
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
-	auto particleEmitter = std::make_shared<BasicParticleEmitter>(0, NUM_PARTICLES);
+	auto particleEmitter = std::make_shared<BasicParticleEmitter>();
 	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.195f;
 	particleEmitter->m_pos = Vec4d{ 0.0, -0.0f, 0.0, 0.0 };
 	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.1, 0.1, 0.0, 0.0 };
@@ -118,13 +118,13 @@ bool initApp()
 	particleEmitter->m_maxStartVel = Vec4d{ 0.1f, 0.1f, 0.25f, 0.0f };
 	gParticleSystem->addEmitter(particleEmitter);
 
-	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>(0, NUM_PARTICLES);
+	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>();
 	gParticleSystem->addUpdater(timeUpdater);
 
-	auto colorUpdater = std::make_shared<BasicColorParticleUpdater>(0, NUM_PARTICLES);
+	auto colorUpdater = std::make_shared<BasicColorParticleUpdater>();
 	gParticleSystem->addUpdater(colorUpdater);
 
-	auto eulerUpdater = std::make_shared<EulerParticleUpdater>(0, NUM_PARTICLES);
+	auto eulerUpdater = std::make_shared<EulerParticleUpdater>();
 	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
 
@@ -178,9 +178,9 @@ void processNormalKeys(unsigned char key, int x, int y)
 void pressSpecialKey(int key, int x, int y) 
 {
 	if (key == GLUT_KEY_UP)
-		camera.cameraPosition[2] += 0.1;
+		camera.cameraPosition[2] += 0.1f;
 	else if (key == GLUT_KEY_DOWN)
-		camera.cameraPosition[2] -= 0.1;
+		camera.cameraPosition[2] -= 0.1f;
 
 	else if (key == GLUT_KEY_LEFT)
 		camera.cameraPosition[0] += 0.1f;

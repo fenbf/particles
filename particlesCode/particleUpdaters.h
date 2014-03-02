@@ -4,12 +4,11 @@
 #include "commonMath.h"
 #include "particles.h"
 
-typedef glm::vec4::value_type FPType;
 
-class BasicParticleEmitter : public ParticleUpdater
+
+class BasicParticleEmitter : public ParticleEmitter
 {
 public:
-	FPType m_emitRate{ 0.0 };
 	Vec4d m_pos{ 0.0 };
 	Vec4d m_maxStartPosOffset{ 0.0 };
 
@@ -24,17 +23,27 @@ public:
 	Vec4d m_minStartVel{ 0.0 };
 	Vec4d m_maxStartVel{ 0.0 };
 public:
-	BasicParticleEmitter(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
+	BasicParticleEmitter() { }
 
-	virtual void update(double dt, ParticleData *p) override;
+protected:
+	// only generates positions for a particles
+	virtual void generatePos(double dt, ParticleData *p, size_t startId, size_t endId) override;
+	// only generates col, startCol and endCol
+	virtual void generateCol(double dt, ParticleData *p, size_t startId, size_t endId) override;
+	// generates rest of fields beside Time and Alive!
+	virtual void generateOther(double dt, ParticleData *p, size_t startId, size_t endId) override;
+	// generates time
+	virtual void generateTime(double dt, ParticleData *p, size_t startId, size_t endId) override;
 };
+
+class 
 
 class EulerParticleUpdater : public ParticleUpdater
 {
 public:
 	Vec4d m_globalAcceleration{ 0.0f };
 public:
-	EulerParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater{ idStart, idEnd } { }
+	EulerParticleUpdater() { }
 
 	virtual void update(double dt, ParticleData *p) override;
 };
@@ -42,7 +51,7 @@ public:
 class BasicColorParticleUpdater : public ParticleUpdater
 {
 public:
-	BasicColorParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
+	BasicColorParticleUpdater() { }
 
 	virtual void update(double dt, ParticleData *p) override;
 };
@@ -50,7 +59,7 @@ public:
 class BasicTimeParticleUpdater : public ParticleUpdater
 {
 public:
-	BasicTimeParticleUpdater(unsigned int idStart, unsigned int idEnd) : ParticleUpdater(idStart, idEnd) { }
+	BasicTimeParticleUpdater() { }
 
 	virtual void update(double dt, ParticleData *p) override;
 };

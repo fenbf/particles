@@ -5,6 +5,7 @@
 #include <glm/vec4.hpp>
 
 typedef glm::vec4 Vec4d;
+typedef glm::vec4::value_type FPType;
 
 class ParticleData
 {
@@ -37,13 +38,41 @@ public:
 	static size_t computeMemoryUsage(const ParticleData &p);
 };
 
+class ParticleGenerator
+{
+public:
+	ParticleGenerator() { }
+	virtual ~ParticleGenerator() { }
+
+	virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+};
+
+class ParticleEmitter
+{
+public:
+	FPType m_emitRate{ 0.0 };
+
+public:
+	ParticleEmitter() { }
+	virtual ~ParticleEmitter() { }
+
+	// calls: genPos() then getCol()... at the end getTime and activates particle
+	virtual void emit(double dt, ParticleData *p);
+protected:
+	// only generates positions for a particles
+	virtual void generatePos(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+	// only generates col, startCol and endCol
+	virtual void generateCol(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+	// generates rest of fields beside Time and Alive!
+	virtual void generateOther(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+	// generates time
+	virtual void generateTime(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+};
+
 class ParticleUpdater
 {
-protected:
-	size_t m_idStart = 0;
-	size_t m_idEnd = 0;
 public:
-	ParticleUpdater(size_t idStart, size_t idEnd) { m_idStart = idStart; m_idEnd = idEnd; }
+	ParticleUpdater() { }
 	virtual ~ParticleUpdater() { }
 
 	virtual void update(double dt, ParticleData *p) = 0;
@@ -57,7 +86,7 @@ protected:
 
 	size_t m_count;
 
-	std::vector<std::shared_ptr<ParticleUpdater>> m_emitters;
+	std::vector<std::shared_ptr<ParticleEmitter>> m_emitters;
 	std::vector<std::shared_ptr<ParticleUpdater>> m_updaters;
 
 public:
@@ -72,7 +101,7 @@ public:
 	virtual size_t numAllParticles() const { return m_count; }
 	virtual size_t numAliveParticles() const { return m_aliveParticles.m_countAlive; }
 
-	void addEmitter(std::shared_ptr<ParticleUpdater> em) { m_emitters.push_back(em); }
+	void addEmitter(std::shared_ptr<ParticleEmitter> em) { m_emitters.push_back(em); }
 	void addUpdater(std::shared_ptr<ParticleUpdater> up) { m_updaters.push_back(up); }
 
 	ParticleData *finalData() { return &m_aliveParticles; }

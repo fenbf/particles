@@ -23,7 +23,7 @@ void ParticleData::generate(size_t maxSize)
 
 void ParticleData::kill(size_t id)
 {
-	if (m_countAlive > 0)
+	if (m_countAlive > 0) // maybe this if can be removed?
 	{
 		m_alive[id] = false;
 		swapData(id, m_countAlive - 1);
@@ -33,10 +33,10 @@ void ParticleData::kill(size_t id)
 
 void ParticleData::wake(size_t id)
 {
-	if (m_countAlive < m_count)
+	if (m_countAlive < m_count) // maybe this if can be removed?
 	{
 		m_alive[id] = true;
-		swapData(id, m_countAlive);
+		//swapData(id, m_countAlive);
 		m_countAlive++;
 	}
 }
@@ -83,6 +83,26 @@ size_t ParticleData::computeMemoryUsage(const ParticleData &p)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ParticleEmitter class 
+
+void ParticleEmitter::emit(double dt, ParticleData *p)
+{
+	const unsigned int maxNewParticles = (int)(dt*m_emitRate);
+	const unsigned int startId = p->m_countAlive;
+	const unsigned int endId = startId + maxNewParticles;
+
+	generatePos(dt, p, startId, endId);
+	generateCol(dt, p, startId, endId);
+	generateOther(dt, p, startId, endId);
+	generateTime(dt, p, startId, endId);
+	
+	for (unsigned int i = startId; i < endId; ++i)
+	{
+		p->wake(i);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ParticleSystem class 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +120,7 @@ void ParticleSystem::update(double dt)
 {
 	for (auto & em : m_emitters)
 	{
-		em->update(dt, &m_particles);
+		em->emit(dt, &m_particles);
 	}
 
 	for (size_t i = 0; i < m_count; ++i)
