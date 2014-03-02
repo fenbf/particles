@@ -4,29 +4,29 @@
 #include "commonMath.h"
 #include "particles.h"
 
-namespace particleGenerator
+namespace particleGenerators
 {
 
-	class BoxPosParticleGenerator : public ParticleGenerator
+	class BoxPosGen : public ParticleGenerator
 	{
 	public:
 		Vec4d m_pos{ 0.0 };
 		Vec4d m_maxStartPosOffset{ 0.0 };
 	public:
-		BoxPosParticleGenerator() { }
+		BoxPosGen() { }
 
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};
 
-	class RoundPosParticleGenerator : public ParticleGenerator
+	class RoundPosGen : public ParticleGenerator
 	{
 	public:
 		Vec4d m_center{ 0.0 };
 		FPType m_radX{ 0.0 };
 		FPType m_radY{ 0.0 };
 	public:
-		RoundPosParticleGenerator() { }
-		RoundPosParticleGenerator(const Vec4d &center, double radX, double radY)
+		RoundPosGen() { }
+		RoundPosGen(const Vec4d &center, double radX, double radY)
 			: m_center(center)
 			, m_radX((FPType)radX)
 			, m_radY((FPType)radY)
@@ -35,7 +35,7 @@ namespace particleGenerator
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};
 
-	class BasicColorParticleGenerator : public ParticleGenerator
+	class BasicColorGen : public ParticleGenerator
 	{
 	public:
 		Vec4d m_minStartCol{ 0.0 };
@@ -43,31 +43,31 @@ namespace particleGenerator
 		Vec4d m_minEndCol{ 0.0 };
 		Vec4d m_maxEndCol{ 0.0 };
 	public:
-		BasicColorParticleGenerator() { }
+		BasicColorGen() { }
 
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};
 
-	class BasicVelParticleGenerator : public ParticleGenerator
+	class BasicVelGen : public ParticleGenerator
 	{
 	public:
 		Vec4d m_minStartVel{ 0.0 };
 		Vec4d m_maxStartVel{ 0.0 };
 	public:
-		BasicVelParticleGenerator() { }
+		BasicVelGen() { }
 
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};
 
-	class VelFromPosParticleGenerator : public ParticleGenerator
+	class VelFromPosGen : public ParticleGenerator
 	{
 	public:
 		Vec4d m_offset{ 0.0 };
 		FPType m_minScale{ 0.0 };
 		FPType m_maxScale{ 0.0 };
 	public:
-		VelFromPosParticleGenerator() { }
-		VelFromPosParticleGenerator(const Vec4d &off, double minS, double maxS)
+		VelFromPosGen() { }
+		VelFromPosGen(const Vec4d &off, double minS, double maxS)
 			: m_offset(off)
 			, m_minScale((FPType)minS)
 			, m_maxScale((FPType)maxS)
@@ -76,13 +76,13 @@ namespace particleGenerator
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};
 
-	class BasicTimeParticleGenerator : public ParticleGenerator
+	class BasicTimeGen : public ParticleGenerator
 	{
 	public:
 		FPType m_minTime{ 0.0 };
 		FPType m_maxTime{ 0.0 };
 	public:
-		BasicTimeParticleGenerator() { }
+		BasicTimeGen() { }
 
 		virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 	};

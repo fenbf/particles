@@ -93,12 +93,12 @@ public:
 	virtual void update(double dt);
 
 	virtual size_t numAllParticles() const { return m_count; }
-	virtual size_t numAliveParticles() const { return m_aliveParticles.m_countAlive; }
+	virtual size_t numAliveParticles() const { return m_particles.m_countAlive; }
 
 	void addEmitter(std::shared_ptr<ParticleEmitter> em) { m_emitters.push_back(em); }
 	void addUpdater(std::shared_ptr<ParticleUpdater> up) { m_updaters.push_back(up); }
 
-	ParticleData *finalData() { return &m_aliveParticles; }
+	ParticleData *finalData() { return &m_particles; }
 
 	static size_t computeMemoryUsage(const ParticleSystem &p);
 };

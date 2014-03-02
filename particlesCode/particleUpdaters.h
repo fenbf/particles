@@ -4,28 +4,32 @@
 #include "commonMath.h"
 #include "particles.h"
 
-class EulerParticleUpdater : public ParticleUpdater
+namespace particleUpdaters
 {
-public:
-	Vec4d m_globalAcceleration{ 0.0f };
-public:
-	EulerParticleUpdater() { }
 
-	virtual void update(double dt, ParticleData *p) override;
-};
+	class EulerUpdater : public ParticleUpdater
+	{
+	public:
+		Vec4d m_globalAcceleration{ 0.0f };
+	public:
+		EulerUpdater() { }
 
-class BasicColorParticleUpdater : public ParticleUpdater
-{
-public:
-	BasicColorParticleUpdater() { }
+		virtual void update(double dt, ParticleData *p) override;
+	};
 
-	virtual void update(double dt, ParticleData *p) override;
-};
+	class BasicColorUpdater : public ParticleUpdater
+	{
+	public:
+		BasicColorUpdater() { }
 
-class BasicTimeParticleUpdater : public ParticleUpdater
-{
-public:
-	BasicTimeParticleUpdater() { }
+		virtual void update(double dt, ParticleData *p) override;
+	};
 
-	virtual void update(double dt, ParticleData *p) override;
-};
+	class BasicTimeUpdater : public ParticleUpdater
+	{
+	public:
+		BasicTimeUpdater() { }
+
+		virtual void update(double dt, ParticleData *p) override;
+	};
+}

@@ -4,49 +4,49 @@
 #include <glm/common.hpp>
 #include <glm/gtc/random.hpp>
 
-namespace particleGenerator
+namespace particleGenerators
 {
 
-	void BoxPosParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void BoxPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
 		Vec4d posMin{ m_pos.x - m_maxStartPosOffset.x, m_pos.y - m_maxStartPosOffset.y, m_pos.z - m_maxStartPosOffset.z, 1.0 };
 		Vec4d posMax{ m_pos.x + m_maxStartPosOffset.x, m_pos.y + m_maxStartPosOffset.y, m_pos.z + m_maxStartPosOffset.z, 1.0 };
 
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			p->m_pos[i] = glm::linearRand(posMin, posMax);
 		}
 	}
 
-	void RoundPosParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void RoundPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			double ang = glm::linearRand(0.0, 3.141592*2.0);
 			p->m_pos[i] = m_center + Vec4d(m_radX*sin(ang), m_radY*cos(ang), 0.0, 1.0);
 		}
 	}
 
-	void BasicColorParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void BasicColorGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			p->m_startCol[i] = glm::linearRand(m_minStartCol, m_maxStartCol);
 			p->m_endCol[i] = glm::linearRand(m_minEndCol, m_maxEndCol);
 		}
 	}
 
-	void BasicVelParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void BasicVelGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			p->m_vel[i] = glm::linearRand(m_minStartVel, m_maxStartVel);
 		}
 	}
 
-	void VelFromPosParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void VelFromPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			FPType scale = static_cast<FPType>(glm::linearRand(m_minScale, m_maxScale));
 			Vec4d vel = (p->m_pos[i] - m_offset);
@@ -54,9 +54,9 @@ namespace particleGenerator
 		}
 	}
 
-	void BasicTimeParticleGenerator::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+	void BasicTimeGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 	{
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			p->m_time[i].x = p->m_time[i].y = glm::linearRand(m_minTime, m_maxTime);
 			p->m_time[i].z = (FPType)0.0;

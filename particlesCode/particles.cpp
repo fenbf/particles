@@ -43,14 +43,22 @@ void ParticleData::wake(size_t id)
 
 void ParticleData::swapData(size_t a, size_t b)
 {
-	std::swap(m_pos[a], m_pos[b]);
+	/*std::swap(m_pos[a], m_pos[b]);
 	std::swap(m_col[a], m_col[b]);
 	std::swap(m_startCol[a], m_startCol[b]);
 	std::swap(m_endCol[a], m_endCol[b]);
 	std::swap(m_vel[a], m_vel[b]);
 	std::swap(m_acc[a], m_acc[b]);
 	std::swap(m_time[a], m_time[b]);
-	std::swap(m_alive[a], m_alive[b]);
+	std::swap(m_alive[a], m_alive[b]);*/
+	m_pos[a] = m_pos[b];
+	m_col[a] = m_col[b];
+	m_startCol[a] = m_startCol[b];
+	m_endCol[a] = m_endCol[b];
+	m_vel[a] = m_vel[b];
+	m_acc[a] = m_acc[b];
+	m_time[a] = m_time[b];
+	m_alive[a] = m_alive[b];
 }
 
 void ParticleData::copyOnlyAlive(const ParticleData *source, ParticleData *destination)
@@ -131,7 +139,7 @@ void ParticleSystem::update(double dt)
 		up->update(dt, &m_particles);
 	}
 
-	ParticleData::copyOnlyAlive(&m_particles, &m_aliveParticles);
+	//ParticleData::copyOnlyAlive(&m_particles, &m_aliveParticles);
 }
 
 size_t ParticleSystem::computeMemoryUsage(const ParticleSystem &p)

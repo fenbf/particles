@@ -29,6 +29,8 @@ std::string Globals::ApplicationWindowName = "Draw Test Particles";
 ShaderProgram mProgram;
 std::shared_ptr<ParticleSystem> gParticleSystem;
 std::shared_ptr<GLParticleRenderer> gParticleRenderer;
+std::shared_ptr<particleGenerators::RoundPosGen> gPosGenerator;
+std::shared_ptr<particleGenerators::BasicColorGen> gColGenerator;
 int gNumParticles = 0;
 int gNumAlive = 0;
 
@@ -110,44 +112,46 @@ bool initApp()
 	//
 	auto particleEmitter = std::make_shared<ParticleEmitter>();
 	{		
-		particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.195f;
+		using namespace particleGenerators;
+		particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.395f;
 
 		// pos:
-		auto posGenerator = std::make_shared<particleGenerator::RoundPosParticleGenerator>();
-		posGenerator->m_center = Vec4d{ 0.0, 0.0f, 0.0, 0.0 };
-		posGenerator->m_radX = 0.15;
-		posGenerator->m_radY = 0.15;
-		//auto posGenerator = std::make_shared<particleGenerator::BoxPosParticleGenerator>();
+		//auto posGenerator = std::make_shared<RoundPosGen>();
+		gPosGenerator = std::make_shared<RoundPosGen>();
+		gPosGenerator->m_center = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+		gPosGenerator->m_radX = 0.15f;
+		gPosGenerator->m_radY = 0.15f;
+		//auto posGenerator = std::make_shared<particleGenerators::BoxPosGen>();
 		//posGenerator->m_pos = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 		//posGenerator->m_maxStartPosOffset = Vec4d{ 0.1, 0.1, 0.0, 0.0 };
-		particleEmitter->addGenerator(posGenerator);
+		particleEmitter->addGenerator(gPosGenerator);
 		
-		auto colGenerator = std::make_shared<particleGenerator::BasicColorParticleGenerator>();
-		colGenerator->m_minStartCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
-		colGenerator->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
-		colGenerator->m_minEndCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
-		colGenerator->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
-		particleEmitter->addGenerator(colGenerator);
+		gColGenerator = std::make_shared<BasicColorGen>();
+		gColGenerator->m_minStartCol = Vec4d{ 0.7, 0.0, 0.7, 0.0 };
+		gColGenerator->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
+		gColGenerator->m_minEndCol = Vec4d{ 0.5, 0.0, 0.6, 0.0 };
+		gColGenerator->m_maxEndCol = Vec4d{ 0.7, 0.5, 1.0, 0.0 };
+		particleEmitter->addGenerator(gColGenerator);
 
-		auto velGenerator = std::make_shared<particleGenerator::BasicVelParticleGenerator>();
-		velGenerator->m_minStartVel = Vec4d{ 0.0f, 0.0f, 0.25f, 0.0f };
-		velGenerator->m_maxStartVel = Vec4d{ 0.0f, 0.0f, 0.35f, 0.0f };
+		auto velGenerator = std::make_shared<BasicVelGen>();
+		velGenerator->m_minStartVel = Vec4d{ 0.0f, 0.0f, 0.15f, 0.0f };
+		velGenerator->m_maxStartVel = Vec4d{ 0.0f, 0.0f, 0.45f, 0.0f };
 		particleEmitter->addGenerator(velGenerator);
 
-		auto timeGenerator = std::make_shared<particleGenerator::BasicTimeParticleGenerator>();
+		auto timeGenerator = std::make_shared<BasicTimeGen>();
 		timeGenerator->m_minTime = 1.0;
-		timeGenerator->m_maxTime = 3.0;	
+		timeGenerator->m_maxTime = 3.5;	
 		particleEmitter->addGenerator(timeGenerator);
 	}
 	gParticleSystem->addEmitter(particleEmitter);
 
-	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>();
+	auto timeUpdater = std::make_shared<particleUpdaters::BasicTimeUpdater>();
 	gParticleSystem->addUpdater(timeUpdater);
 
-	auto colorUpdater = std::make_shared<BasicColorParticleUpdater>();
+	auto colorUpdater = std::make_shared<particleUpdaters::BasicColorUpdater>();
 	gParticleSystem->addUpdater(colorUpdater);
 
-	auto eulerUpdater = std::make_shared<EulerParticleUpdater>();
+	auto eulerUpdater = std::make_shared<particleUpdaters::EulerUpdater>();
 	eulerUpdater->m_globalAcceleration = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
 
@@ -168,6 +172,13 @@ bool initApp()
 	ui::AddVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
 	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");	
 
+	ui::AddTweakColor4f("start col min", &gColGenerator->m_minStartCol.x, "");
+	ui::AddTweakColor4f("start col max", &gColGenerator->m_maxStartCol.x, "");
+	ui::AddTweakColor4f("end col min", &gColGenerator->m_minEndCol.x, "");
+	ui::AddTweakColor4f("end col max", &gColGenerator->m_maxEndCol.x, "");
+
+	ui::AddTweakDir3f("camera", &camera.cameraPosition.x, "");
+	
 	return true;
 }
 
@@ -239,6 +250,14 @@ void processMousePassiveMotion(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
+	static double time = 0.0;
+	time += deltaTime;
+
+	gPosGenerator->m_center.x = 0.1*sinf((float)time*2.5);
+	gPosGenerator->m_center.y = 0.1*cosf((float)time*2.5);
+	gPosGenerator->m_radX = 0.15f + 0.05*sinf((float)time);
+	gPosGenerator->m_radY = 0.15f + 0.05*sinf((float)time)*cosf((float)time*0.5);
+
 	cpuParticlesUpdate.begin();
 		gParticleSystem->update((FPType)deltaTime);
 		gNumAlive = gParticleSystem->numAliveParticles();
