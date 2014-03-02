@@ -91,10 +91,8 @@ void ParticleEmitter::emit(double dt, ParticleData *p)
 	const unsigned int startId = p->m_countAlive;
 	const unsigned int endId = startId + maxNewParticles;
 
-	generatePos(dt, p, startId, endId);
-	generateCol(dt, p, startId, endId);
-	generateOther(dt, p, startId, endId);
-	generateTime(dt, p, startId, endId);
+	for (auto &gen : m_generators)
+		gen->generate(dt, p, startId, endId);
 	
 	for (unsigned int i = startId; i < endId; ++i)
 	{

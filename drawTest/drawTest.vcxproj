@@ -103,6 +103,7 @@
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
+    <ClCompile Include="..\particlesCode\particleGenerators.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="..\commonCode\TextureLoader.h" />
     <ClInclude Include="..\commonCode\TimeQuery.h" />
     <ClInclude Include="..\commonCode\UIWrapper.h" />
+    <ClInclude Include="..\particlesCode\particleGenerators.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
     <ClInclude Include="..\particlesCode\particleUpdaters.h" />

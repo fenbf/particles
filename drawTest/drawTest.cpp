@@ -15,6 +15,7 @@
 
 #include "Particles.h"
 #include "ParticleUpdaters.h"
+#include "particleGenerators.h"
 #include "ParticleRenderer.h"
 #include "TimeQuery.h"
 
@@ -104,18 +105,40 @@ bool initApp()
 	gNumParticles = NUM_PARTICLES;
 	gParticleSystem = std::make_shared<ParticleSystem>(NUM_PARTICLES);
 
-	auto particleEmitter = std::make_shared<BasicParticleEmitter>();
-	particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.195f;
-	particleEmitter->m_pos = Vec4d{ 0.0, -0.0f, 0.0, 0.0 };
-	particleEmitter->m_maxStartPosOffset = Vec4d{ 0.1, 0.1, 0.0, 0.0 };
-	particleEmitter->m_minStartCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
-	particleEmitter->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
-	particleEmitter->m_minEndCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
-	particleEmitter->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
-	particleEmitter->m_minTime = 1.0;
-	particleEmitter->m_maxTime = 3.0;
-	particleEmitter->m_minStartVel = Vec4d{ -0.1f, -0.1f, 0.05f, 0.0f };
-	particleEmitter->m_maxStartVel = Vec4d{ 0.1f, 0.1f, 0.25f, 0.0f };
+	//
+	// emitter:
+	//
+	auto particleEmitter = std::make_shared<ParticleEmitter>();
+	{		
+		particleEmitter->m_emitRate = (float)NUM_PARTICLES*0.195f;
+
+		// pos:
+		auto posGenerator = std::make_shared<particleGenerator::RoundPosParticleGenerator>();
+		posGenerator->m_center = Vec4d{ 0.0, 0.0f, 0.0, 0.0 };
+		posGenerator->m_radX = 0.15;
+		posGenerator->m_radY = 0.15;
+		//auto posGenerator = std::make_shared<particleGenerator::BoxPosParticleGenerator>();
+		//posGenerator->m_pos = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+		//posGenerator->m_maxStartPosOffset = Vec4d{ 0.1, 0.1, 0.0, 0.0 };
+		particleEmitter->addGenerator(posGenerator);
+		
+		auto colGenerator = std::make_shared<particleGenerator::BasicColorParticleGenerator>();
+		colGenerator->m_minStartCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+		colGenerator->m_maxStartCol = Vec4d{ 1.0, 1.0, 1.0, 1.0 };
+		colGenerator->m_minEndCol = Vec4d{ 0.0, 0.0, 0.0, 0.0 };
+		colGenerator->m_maxEndCol = Vec4d{ 1.0, 1.0, 1.0, 0.0 };
+		particleEmitter->addGenerator(colGenerator);
+
+		auto velGenerator = std::make_shared<particleGenerator::BasicVelParticleGenerator>();
+		velGenerator->m_minStartVel = Vec4d{ 0.0f, 0.0f, 0.25f, 0.0f };
+		velGenerator->m_maxStartVel = Vec4d{ 0.0f, 0.0f, 0.35f, 0.0f };
+		particleEmitter->addGenerator(velGenerator);
+
+		auto timeGenerator = std::make_shared<particleGenerator::BasicTimeParticleGenerator>();
+		timeGenerator->m_minTime = 1.0;
+		timeGenerator->m_maxTime = 3.0;	
+		particleEmitter->addGenerator(timeGenerator);
+	}
 	gParticleSystem->addEmitter(particleEmitter);
 
 	auto timeUpdater = std::make_shared<BasicTimeParticleUpdater>();

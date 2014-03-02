@@ -49,24 +49,18 @@ public:
 
 class ParticleEmitter
 {
+protected:
+	std::vector<std::shared_ptr<ParticleGenerator>> m_generators;
 public:
-	FPType m_emitRate{ 0.0 };
-
+	FPType m_emitRate{ 0.0 };	
 public:
 	ParticleEmitter() { }
 	virtual ~ParticleEmitter() { }
 
-	// calls: genPos() then getCol()... at the end getTime and activates particle
+	// calls all the generators and at the end it activates (wakes) particle
 	virtual void emit(double dt, ParticleData *p);
-protected:
-	// only generates positions for a particles
-	virtual void generatePos(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
-	// only generates col, startCol and endCol
-	virtual void generateCol(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
-	// generates rest of fields beside Time and Alive!
-	virtual void generateOther(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
-	// generates time
-	virtual void generateTime(double dt, ParticleData *p, size_t startId, size_t endId) = 0;
+
+	void addGenerator(std::shared_ptr<ParticleGenerator> gen) { m_generators.push_back(gen); }
 };
 
 class ParticleUpdater
