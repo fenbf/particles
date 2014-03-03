@@ -12,20 +12,20 @@
 //#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-TimerQuery::TimerQuery() 
+GpuTimerQuery::GpuTimerQuery() 
 { 
     mQuery     = 0; 
     resetTime();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-TimerQuery::~TimerQuery()
+GpuTimerQuery::~GpuTimerQuery()
 { 
     deleteQuery(); 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void TimerQuery::init() 
+void GpuTimerQuery::init() 
 { 
     /*if (!GLEW_ARB_timer_query)
     {
@@ -38,7 +38,7 @@ void TimerQuery::init()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void TimerQuery::updateResults(WaitOption wait)
+void GpuTimerQuery::updateResults(WaitOption wait)
 {
     // query time results
     int stopTimerAvailable = (wait == WaitOption::WaitForResults ? 0 : 1);
@@ -62,7 +62,7 @@ void TimerQuery::updateResults(WaitOption wait)
 
 
 ///////////////////////////////////////////////////////////////////////////////
-void TimerQuery::deleteQuery() 
+void GpuTimerQuery::deleteQuery() 
 { 
     if (mQuery > 0) 
         glDeleteQueries(1, &mQuery); 

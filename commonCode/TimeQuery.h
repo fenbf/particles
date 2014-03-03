@@ -5,9 +5,32 @@
 *	@date May 2012
 */
 
+#include <chrono>
+
+class CpuTimeQuery
+{
+public:
+	double m_time;
+
+protected:
+	std::chrono::time_point<std::chrono::high_resolution_clock> m_cpuTimePointStart;
+
+public:
+	void begin()
+	{
+		m_cpuTimePointStart = std::chrono::high_resolution_clock::now();
+	}
+
+	void end()
+	{
+		auto diff = std::chrono::high_resolution_clock::now() - m_cpuTimePointStart;
+		auto mili = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
+		m_time = 0.5*(m_time + (double)mili);
+	}
+};
 
 /** simple wrapper for the GL_TIME_QUERY from OpenGL */
-class TimerQuery
+class GpuTimerQuery
 {
 public:
     enum class WaitOption 
@@ -23,8 +46,8 @@ private:
     double   mTimes[3];
     double   mTime;
 public:
-    TimerQuery();
-    ~TimerQuery();
+    GpuTimerQuery();
+    ~GpuTimerQuery();
 
     /// inits the query, deletes the query if it is created
     void init();
@@ -54,19 +77,19 @@ private:
 // inline:
 
 ///////////////////////////////////////////////////////////////////////////////
-void TimerQuery::begin()
+void GpuTimerQuery::begin()
 {
     glBeginQuery(GL_TIME_ELAPSED, mQuery);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void TimerQuery::end()
+void GpuTimerQuery::end()
 {
     glEndQuery(GL_TIME_ELAPSED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-inline void TimerQuery::resetTime() 
+inline void GpuTimerQuery::resetTime() 
 { 
     mWholeTime = 0; 
     mCounter   = 0; 
@@ -75,7 +98,7 @@ inline void TimerQuery::resetTime()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-inline double TimerQuery::getAverageTime() const	
+inline double GpuTimerQuery::getAverageTime() const	
 {
     double avg = mWholeTime/(double)mCounter;
     avg /= 1000000.0;
@@ -83,7 +106,7 @@ inline double TimerQuery::getAverageTime() const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-inline double &TimerQuery::getTime() 
+inline double &GpuTimerQuery::getTime() 
 { 
     return mTime; 
 }

@@ -4,13 +4,13 @@
 #include <glm/common.hpp>
 #include <glm/gtc/random.hpp>
 
-namespace particleUpdaters
+namespace particles
 {
 
 	void EulerUpdater::update(double dt, ParticleData *p)
 	{
-		const Vec4d globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
-		const FPType localDT = (FPType)dt;
+		const glm::vec4 globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
+		const float localDT = (float)dt;
 
 		const unsigned int endId = p->m_countAlive;
 		for (size_t i = 0; i < endId; ++i)
@@ -33,14 +33,14 @@ namespace particleUpdaters
 	void BasicTimeUpdater::update(double dt, ParticleData *p)
 	{
 		unsigned int endId = p->m_countAlive;
-		const FPType localDT = (FPType)dt;
+		const float localDT = (float)dt;
 		for (unsigned int i = 0; i < endId; ++i)
 		{
 			p->m_time[i].x -= localDT;
 			// interpolation: from 0 (start of life) till 1 (end of life)
-			p->m_time[i].z = (FPType)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time		
+			p->m_time[i].z = (float)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time		
 
-			if (p->m_time[i].x < (FPType)0.0)
+			if (p->m_time[i].x < (float)0.0)
 			{
 				p->kill(i);
 				endId = p->m_countAlive < p->m_count ? p->m_countAlive : p->m_count;

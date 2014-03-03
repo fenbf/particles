@@ -4,13 +4,13 @@
 #include "commonMath.h"
 #include "particles.h"
 
-namespace particleUpdaters
+namespace particles
 {
 
-	class EulerUpdater : public ParticleUpdater
+	class EulerUpdater : public particles::ParticleUpdater
 	{
 	public:
-		Vec4d m_globalAcceleration{ 0.0f };
+		glm::vec4 m_globalAcceleration{ 0.0f };
 	public:
 		EulerUpdater() { }
 
