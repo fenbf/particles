@@ -91,7 +91,7 @@ namespace particles
 
 		virtual void update(double dt);
 
-		virtual size_t numAllParticles() const { return m_count; }
+		virtual size_t numAllParticles() const { return m_particles.m_count; }
 		virtual size_t numAliveParticles() const { return m_particles.m_countAlive; }
 
 		void addEmitter(std::shared_ptr<ParticleEmitter> em) { m_emitters.push_back(em); }

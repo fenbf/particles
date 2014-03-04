@@ -58,6 +58,10 @@ namespace ui
 		TwRemoveAllVars(Globals::MainTweakBar);
 	}
 
+	inline void AddSeparator()
+	{
+		TwAddSeparator(Globals::MainTweakBar, "sep", "");
+	}
 #else
 	inline template <typename T> void AddTweak(const char *name, T *var, const char *def) { }
 	inline void AddTweakColor3f(const char *name, float *col, const char *def) { }
@@ -66,5 +70,6 @@ namespace ui
 	inline template <typename T> void AddVar(const char *name, T *var, const char *def) { }
 	inline void RemoveVar(const char *name) { }
 	inline void RemoveAllVars() { }
+	inline void AddSeparator() { }
 #endif
 }

@@ -20,6 +20,8 @@
 #include "TimeQuery.h"
 
 #include "effect.h"
+#include "tunnelEffect.h"
+#include "attractorEffect.h"
 
 using namespace std;
 
@@ -29,7 +31,10 @@ using namespace std;
 std::string Globals::ApplicationWindowName = "Particles Tests";
 
 ShaderProgram mProgram;
-std::shared_ptr<IEffect> gEffect;
+std::shared_ptr<IEffect> gEffects[2];
+IEffect *gCurrentEffect = nullptr;
+int gCurrentEffectID = 0;
+int gSelectedEffect = 0;
 
 int gNumParticles = 0;
 int gNumAlive = 0;
@@ -79,8 +84,12 @@ bool initApp()
 	mProgram.uniform1i("tex", 0);
 	mProgram.disable();
 
-	gEffect = std::make_shared<TunnelEffect>();
-	gEffect->initialize();
+	gEffects[0] = std::make_shared<TunnelEffect>();
+	gEffects[0]->initialize();
+	gEffects[1] = std::make_shared<AttractorEffect>();
+	gEffects[1]->initialize();
+	gCurrentEffectID = 0;
+	gCurrentEffect = gEffects[0].get();
 
 	gpuUpdate.init();
 	gpuRender.init();
@@ -94,8 +103,9 @@ bool initApp()
 	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");		
 
 	ui::AddTweakDir3f("camera", &camera.cameraPosition.x, "");
-
-	gEffect->addUI();
+	ui::AddSeparator();
+	ui::AddTweak<int>("effect id", &gSelectedEffect, "min=0 max=1");
+	gCurrentEffect->addUI();
 	
 	return true;
 }
@@ -103,7 +113,7 @@ bool initApp()
 ///////////////////////////////////////////////////////////////////////////////
 void cleanUp()
 {
-	gEffect->clean();
+	gCurrentEffect->clean();
 	glDeleteTextures(1, &gParticleTexture);
 }
 
@@ -168,19 +178,30 @@ void processMousePassiveMotion(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
-	gEffect->update(deltaTime);
+	if (gSelectedEffect != gCurrentEffectID)
+	{
+		gCurrentEffect->removeUI();
+		gCurrentEffectID = gSelectedEffect;
+		gCurrentEffect = gEffects[gCurrentEffectID].get();
+		gCurrentEffect->addUI();
+	}
+
+	gCurrentEffect->update(deltaTime);
 
 	cpuParticlesUpdate.begin();
-		gEffect->cpuUpdate(deltaTime);
+		gCurrentEffect->cpuUpdate(deltaTime);
 		gNumAlive = 0;// gParticleSystem->numAliveParticles();
 	cpuParticlesUpdate.end();
 
 	cpuBuffersUpdate.begin();
 		gpuUpdate.begin();
-			gEffect->gpuUpdate(deltaTime);
+			gCurrentEffect->gpuUpdate(deltaTime);
 		gpuUpdate.end();		
 	cpuBuffersUpdate.end();
 	gpuUpdate.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+
+	gNumParticles = gCurrentEffect->numAllParticles();
+	gNumAlive = gCurrentEffect->numAliveParticles();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,7 +228,7 @@ void renderScene()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	gpuRender.begin();
-		gEffect->render();
+		gCurrentEffect->render();
 	gpuRender.end();
 
 	glDisable(GL_BLEND);

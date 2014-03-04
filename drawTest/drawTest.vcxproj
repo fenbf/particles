@@ -109,10 +109,12 @@
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
+    <ClCompile Include="attractorEffect.cpp" />
     <ClCompile Include="drawTest.cpp" />
     <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
     <ClCompile Include="effect.cpp" />
+    <ClCompile Include="tunnelEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\commonCode\commonCode.h" />
@@ -129,7 +131,9 @@
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
     <ClInclude Include="..\particlesCode\particleUpdaters.h" />
+    <ClInclude Include="attractorEffect.h" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="tunnelEffect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
