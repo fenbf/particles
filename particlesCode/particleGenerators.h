@@ -61,6 +61,17 @@ namespace particles
 			virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
 		};
 
+		class SphereVelGen : public ParticleGenerator
+		{
+		public:
+			float m_minVel{ 0.0f };
+			float m_maxVel{ 0.0f };
+		public:
+			SphereVelGen() { }
+
+			virtual void generate(double dt, ParticleData *p, size_t startId, size_t endId) override;
+		};
+
 		class VelFromPosGen : public ParticleGenerator
 		{
 		public:

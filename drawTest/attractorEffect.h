@@ -14,7 +14,10 @@ private:
 	std::shared_ptr<particles::ParticleSystem> gParticleSystem;
 	std::shared_ptr<particles::GLParticleRenderer> gParticleRenderer;
 	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator;
+	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator2;
+	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator3;
 	std::shared_ptr<particles::generators::BasicColorGen> gColGenerator;
+	float m_zScale;
 public:
 	AttractorEffect() { }
 	~AttractorEffect() { }

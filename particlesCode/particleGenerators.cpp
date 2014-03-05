@@ -4,6 +4,11 @@
 #include <glm/common.hpp>
 #include <glm/gtc/random.hpp>
 
+#ifndef M_PI
+	#define M_PI 		3.1415926535897932384626433832795f
+	#define M_2_PI 		6.28318530717958647692528676655901f		// PI*2
+#endif
+
 namespace particles
 {
 	namespace generators
@@ -23,7 +28,7 @@ namespace particles
 		{
 			for (size_t i = startId; i < endId; ++i)
 			{
-				double ang = glm::linearRand(0.0, 3.141592*2.0);
+				double ang = glm::linearRand(0.0, M_PI*2.0);
 				p->m_pos[i] = m_center + glm::vec4(m_radX*sin(ang), m_radY*cos(ang), 0.0, 1.0);
 			}
 		}
@@ -42,6 +47,22 @@ namespace particles
 			for (size_t i = startId; i < endId; ++i)
 			{
 				p->m_vel[i] = glm::linearRand(m_minStartVel, m_maxStartVel);
+			}
+		}
+
+		void SphereVelGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
+		{
+			float phi, theta, v, r;
+			for (size_t i = startId; i < endId; ++i)
+			{
+				phi = glm::linearRand(-M_PI, M_PI);
+				theta = glm::linearRand(-M_PI, M_PI);
+				v = glm::linearRand(m_minVel, m_maxVel);
+
+				r = v*sinf(phi);
+				p->m_vel[i].z = v*cosf(phi);
+				p->m_vel[i].x = r*cosf(theta);
+				p->m_vel[i].y = r*sinf(theta);
 			}
 		}
 
