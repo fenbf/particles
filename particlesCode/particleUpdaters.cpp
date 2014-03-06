@@ -23,6 +23,31 @@ namespace particles
 			p->m_pos[i] += localDT * p->m_vel[i];
 	}
 
+	void AttractorUpdater::update(double dt, ParticleData *p)
+	{
+		const float localDT = (float)dt;
+
+		const size_t endId = p->m_countAlive;
+		const size_t countAttractors = m_attractors.size();
+		glm::vec4 off;
+		float dist;
+		for (size_t i = 0; i < endId; ++i)
+		{			
+			for (size_t a = 0; a < countAttractors; ++a)
+			{
+				off.x = m_attractors[a].x - p->m_pos[i].x;
+				off.y = m_attractors[a].y - p->m_pos[i].y;
+				off.z = m_attractors[a].z - p->m_pos[i].z;
+				dist = glm::dot(off, off);
+				
+				//if (fabs(dist) > 0.00001)
+				dist = m_attractors[a].w / dist;
+
+				p->m_acc[i] += off * dist;
+			}
+		}
+	}
+
 	void BasicColorUpdater::update(double dt, ParticleData *p)
 	{
 		const unsigned int endId = p->m_countAlive;

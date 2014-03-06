@@ -118,6 +118,13 @@ bool AttractorEffect::initialize()
 	auto colorUpdater = std::make_shared<particles::BasicColorUpdater>();
 	gParticleSystem->addUpdater(colorUpdater);
 
+	auto attractorUpdater = std::make_shared<particles::AttractorUpdater>();
+	attractorUpdater->add(glm::vec4 {0.0, 0.0, 0.75, 1.0});
+	attractorUpdater->add(glm::vec4 { 0.0, 0.0, -0.75, 1.0 });
+	attractorUpdater->add(glm::vec4{ 0.0, 0.75, 0.0, 1.0 });
+	attractorUpdater->add(glm::vec4{ 0.0, -0.75, 0.0, 1.0 });
+	gParticleSystem->addUpdater(attractorUpdater);
+
 	auto eulerUpdater = std::make_shared<particles::EulerUpdater>();
 	eulerUpdater->m_globalAcceleration = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
 	gParticleSystem->addUpdater(eulerUpdater);
