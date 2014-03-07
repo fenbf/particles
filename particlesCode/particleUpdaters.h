@@ -6,41 +6,46 @@
 
 namespace particles
 {
-
-	class EulerUpdater : public particles::ParticleUpdater
+	namespace updaters
 	{
-	public:
-		glm::vec4 m_globalAcceleration{ 0.0f };
-	public:
-		EulerUpdater() { }
+		class EulerUpdater : public particles::ParticleUpdater
+		{
+		public:
+			glm::vec4 m_globalAcceleration{ 0.0f };
+		public:
+			EulerUpdater() { }
 
-		virtual void update(double dt, ParticleData *p) override;
-	};
+			virtual void update(double dt, ParticleData *p) override;
+		};
 
-	class AttractorUpdater : public particles::ParticleUpdater
-	{
-	protected:
-		std::vector<glm::vec4> m_attractors; // .w is force
-	public:
-		AttractorUpdater() { }
+		class AttractorUpdater : public particles::ParticleUpdater
+		{
+		protected:
+			std::vector<glm::vec4> m_attractors; // .w is force
+		public:
+			AttractorUpdater() { }
 
-		virtual void update(double dt, ParticleData *p) override;
-		void add(const glm::vec4 &attr) { m_attractors.push_back(attr); }
-	};
+			virtual void update(double dt, ParticleData *p) override;
 
-	class BasicColorUpdater : public ParticleUpdater
-	{
-	public:
-		BasicColorUpdater() { }
+			size_t collectionSize() const { return m_attractors.size(); }
+			void add(const glm::vec4 &attr) { m_attractors.push_back(attr); }
+			glm::vec4 &get(size_t id) { return m_attractors[id]; }
+		};
 
-		virtual void update(double dt, ParticleData *p) override;
-	};
+		class BasicColorUpdater : public ParticleUpdater
+		{
+		public:
+			BasicColorUpdater() { }
 
-	class BasicTimeUpdater : public ParticleUpdater
-	{
-	public:
-		BasicTimeUpdater() { }
+			virtual void update(double dt, ParticleData *p) override;
+		};
 
-		virtual void update(double dt, ParticleData *p) override;
-	};
+		class BasicTimeUpdater : public ParticleUpdater
+		{
+		public:
+			BasicTimeUpdater() { }
+
+			virtual void update(double dt, ParticleData *p) override;
+		};
+	}
 }

@@ -8,7 +8,7 @@ bool TunnelEffect::initialize()
 	// particles
 	//
 	const size_t NUM_PARTICLES = 100000;
-	gParticleSystem = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
+	m_system = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
 
 	//
 	// emitter:
@@ -19,21 +19,21 @@ bool TunnelEffect::initialize()
 
 		// pos:
 		//auto posGenerator = std::make_shared<RoundPosGen>();
-		gPosGenerator = std::make_shared<particles::generators::RoundPosGen>();
-		gPosGenerator->m_center = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
-		gPosGenerator->m_radX = 0.15f;
-		gPosGenerator->m_radY = 0.15f;
+		m_posGenerator = std::make_shared<particles::generators::RoundPosGen>();
+		m_posGenerator->m_center = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
+		m_posGenerator->m_radX = 0.15f;
+		m_posGenerator->m_radY = 0.15f;
 		//auto posGenerator = std::make_shared<particleGenerators::BoxPosGen>();
 		//posGenerator->m_pos = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
 		//posGenerator->m_maxStartPosOffset = glm::vec4{ 0.1, 0.1, 0.0, 0.0 };
-		particleEmitter->addGenerator(gPosGenerator);
+		particleEmitter->addGenerator(m_posGenerator);
 
-		gColGenerator = std::make_shared<particles::generators::BasicColorGen>();
-		gColGenerator->m_minStartCol = glm::vec4{ 0.7, 0.0, 0.7, 1.0 };
-		gColGenerator->m_maxStartCol = glm::vec4{ 1.0, 1.0, 1.0, 1.0 };
-		gColGenerator->m_minEndCol = glm::vec4{ 0.5, 0.0, 0.6, 0.0 };
-		gColGenerator->m_maxEndCol = glm::vec4{ 0.7, 0.5, 1.0, 0.0 };
-		particleEmitter->addGenerator(gColGenerator);
+		m_colGenerator = std::make_shared<particles::generators::BasicColorGen>();
+		m_colGenerator->m_minStartCol = glm::vec4{ 0.7, 0.0, 0.7, 1.0 };
+		m_colGenerator->m_maxStartCol = glm::vec4{ 1.0, 1.0, 1.0, 1.0 };
+		m_colGenerator->m_minEndCol = glm::vec4{ 0.5, 0.0, 0.6, 0.0 };
+		m_colGenerator->m_maxEndCol = glm::vec4{ 0.7, 0.5, 1.0, 0.0 };
+		particleEmitter->addGenerator(m_colGenerator);
 
 		auto velGenerator = std::make_shared<particles::generators::BasicVelGen>();
 		velGenerator->m_minStartVel = glm::vec4{ 0.0f, 0.0f, 0.15f, 0.0f };
@@ -45,38 +45,38 @@ bool TunnelEffect::initialize()
 		timeGenerator->m_maxTime = 3.5;
 		particleEmitter->addGenerator(timeGenerator);
 	}
-	gParticleSystem->addEmitter(particleEmitter);
+	m_system->addEmitter(particleEmitter);
 
-	auto timeUpdater = std::make_shared<particles::BasicTimeUpdater>();
-	gParticleSystem->addUpdater(timeUpdater);
+	auto timeUpdater = std::make_shared<particles::updaters::BasicTimeUpdater>();
+	m_system->addUpdater(timeUpdater);
 
-	auto colorUpdater = std::make_shared<particles::BasicColorUpdater>();
-	gParticleSystem->addUpdater(colorUpdater);
+	auto colorUpdater = std::make_shared<particles::updaters::BasicColorUpdater>();
+	m_system->addUpdater(colorUpdater);
 
-	auto eulerUpdater = std::make_shared<particles::EulerUpdater>();
+	auto eulerUpdater = std::make_shared<particles::updaters::EulerUpdater>();
 	eulerUpdater->m_globalAcceleration = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
-	gParticleSystem->addUpdater(eulerUpdater);
+	m_system->addUpdater(eulerUpdater);
 
 	//auto myUpdater = std::make_shared<MyUpdater>(0, NUM_PARTICLES);
-	//gParticleSystem->addUpdater(myUpdater);
+	//m_system->addUpdater(myUpdater);
 
-	gParticleRenderer = std::make_shared<particles::GLParticleRenderer>();
-	gParticleRenderer->generate(gParticleSystem.get(), false);
+	m_renderer = std::make_shared<particles::GLParticleRenderer>();
+	m_renderer->generate(m_system.get(), false);
 
 	return true;
 }
 
 void TunnelEffect::clean()
 {
-	if (gParticleRenderer) gParticleRenderer->destroy();
+	if (m_renderer) m_renderer->destroy();
 }
 
 void TunnelEffect::addUI()
 {
-	ui::AddTweakColor4f("start col min", &gColGenerator->m_minStartCol.x, "group=effect");
-	ui::AddTweakColor4f("start col max", &gColGenerator->m_maxStartCol.x, "group=effect");
-	ui::AddTweakColor4f("end col min", &gColGenerator->m_minEndCol.x, "group=effect");
-	ui::AddTweakColor4f("end col max", &gColGenerator->m_maxEndCol.x, "group=effect");
+	ui::AddTweakColor4f("start col min", &m_colGenerator->m_minStartCol.x, "group=effect");
+	ui::AddTweakColor4f("start col max", &m_colGenerator->m_maxStartCol.x, "group=effect");
+	ui::AddTweakColor4f("end col min", &m_colGenerator->m_minEndCol.x, "group=effect");
+	ui::AddTweakColor4f("end col max", &m_colGenerator->m_maxEndCol.x, "group=effect");
 }
 
 void TunnelEffect::removeUI()
@@ -92,23 +92,23 @@ void TunnelEffect::update(double dt)
 	static double time = 0.0;
 	time += dt;
 
-	gPosGenerator->m_center.x = 0.1*sinf((float)time*2.5);
-	gPosGenerator->m_center.y = 0.1*cosf((float)time*2.5);
-	gPosGenerator->m_radX = 0.15f + 0.05*sinf((float)time);
-	gPosGenerator->m_radY = 0.15f + 0.05*sinf((float)time)*cosf((float)time*0.5);
+	m_posGenerator->m_center.x = 0.1f*sinf((float)time*2.5f);
+	m_posGenerator->m_center.y = 0.1f*cosf((float)time*2.5f);
+	m_posGenerator->m_radX = 0.15f + 0.05f*sinf((float)time);
+	m_posGenerator->m_radY = 0.15f + 0.05f*sinf((float)time)*cosf((float)time*0.5f);
 }
 
 void TunnelEffect::cpuUpdate(double dt)
 {
-	gParticleSystem->update(dt);
+	m_system->update(dt);
 }
 
 void TunnelEffect::gpuUpdate(double dt)
 {
-	gParticleRenderer->update();
+	m_renderer->update();
 }
 
 void TunnelEffect::render()
 {
-	gParticleRenderer->render();
+	m_renderer->render();
 }

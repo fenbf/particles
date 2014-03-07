@@ -43,7 +43,8 @@ unsigned int gParticleTexture = 0;
 
 struct Camera
 {
-	glm::vec3 cameraPosition;
+	float camDistance;
+	glm::vec3 cameraDir;
 	glm::mat4 modelviewMatrix;
 	glm::mat4 projectionMatrix;
 } camera;
@@ -64,9 +65,10 @@ bool initApp()
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.15f, 0.15f, 0.15f, 0.0f);
 
-	camera.cameraPosition[0] = 0.0f;
-	camera.cameraPosition[1] = 0.0f;
-	camera.cameraPosition[2] = 1.0f;
+	camera.cameraDir[0] = 0.0f;
+	camera.cameraDir[1] = 0.0f;
+	camera.cameraDir[2] = 1.0f;
+	camera.camDistance = 1.0f;
 
     //
     // shaders
@@ -102,7 +104,8 @@ bool initApp()
 	ui::AddVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
 	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");		
 
-	ui::AddTweakDir3f("camera", &camera.cameraPosition.x, "");
+	ui::AddTweakDir3f("camera", &camera.cameraDir.x, "");
+	ui::AddTweak("camera distance", &camera.camDistance, "min=0.05 max=4.0 step=0.01");
 	ui::AddSeparator();
 	ui::AddTweak<int>("effect id", &gSelectedEffect, "min=0 max=1");
 	gCurrentEffect->addUI();
@@ -140,14 +143,9 @@ void processNormalKeys(unsigned char key, int x, int y)
 void pressSpecialKey(int key, int x, int y) 
 {
 	if (key == GLUT_KEY_UP)
-		camera.cameraPosition[2] += 0.1f;
+		camera.camDistance += 0.1f;
 	else if (key == GLUT_KEY_DOWN)
-		camera.cameraPosition[2] -= 0.1f;
-
-	else if (key == GLUT_KEY_LEFT)
-		camera.cameraPosition[0] += 0.1f;
-	else if (key == GLUT_KEY_RIGHT)
-		camera.cameraPosition[0] -= 0.1f;
+		camera.camDistance-= 0.1f;
 }
 
 
@@ -213,7 +211,7 @@ void renderScene()
 	//
 	// camera
 	//
-	camera.modelviewMatrix = glm::lookAt(camera.cameraPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	camera.modelviewMatrix = glm::lookAt(camera.cameraDir*camera.camDistance, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, gParticleTexture);

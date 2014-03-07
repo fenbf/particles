@@ -11,12 +11,11 @@
 class AttractorEffect : public IEffect
 {
 private:
-	std::shared_ptr<particles::ParticleSystem> gParticleSystem;
-	std::shared_ptr<particles::GLParticleRenderer> gParticleRenderer;
-	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator;
-	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator2;
-	std::shared_ptr<particles::generators::BoxPosGen> gPosGenerator3;
-	std::shared_ptr<particles::generators::BasicColorGen> gColGenerator;
+	std::shared_ptr<particles::ParticleSystem> m_system;
+	std::shared_ptr<particles::GLParticleRenderer> m_renderer;
+	std::shared_ptr<particles::generators::BoxPosGen> m_posGenerators[3];
+	std::shared_ptr<particles::generators::BasicColorGen> m_colGenerator;
+	std::shared_ptr<particles::updaters::AttractorUpdater> m_attractors;
 	float m_zScale;
 public:
 	AttractorEffect() { }
@@ -32,6 +31,6 @@ public:
 	void gpuUpdate(double dt) override;
 	void render() override;
 
-	int numAllParticles() override { return gParticleSystem->numAllParticles(); }
-	int numAliveParticles() override { return gParticleSystem->numAliveParticles(); }
+	int numAllParticles() override { return m_system->numAllParticles(); }
+	int numAliveParticles() override { return m_system->numAliveParticles(); }
 };
