@@ -14,10 +14,10 @@ bool AttractorEffect::initialize()
 	// common
 	//
 	m_colGenerator = std::make_shared<particles::generators::BasicColorGen>();
-	m_colGenerator->m_minStartCol = glm::vec4{ 0.0, 0.0, 0.7, 1.0 };
-	m_colGenerator->m_maxStartCol = glm::vec4{ 0.7, 1.0, 1.0, 1.0 };
-	m_colGenerator->m_minEndCol = glm::vec4{ 0.5, 0.0, 0.6, 0.0 };
-	m_colGenerator->m_maxEndCol = glm::vec4{ 0.7, 0.5, 1.0, 0.25 };
+	m_colGenerator->m_minStartCol = glm::vec4{ 0.99, 0.99, 0.99, 1.0 };
+	m_colGenerator->m_maxStartCol = glm::vec4{ 0.99, 0.99, 1.0, 1.0 };
+	m_colGenerator->m_minEndCol = glm::vec4{ 0.99, 0.99, 0.99, 0.0 };
+	m_colGenerator->m_maxEndCol = glm::vec4{ 0.99, 0.99, 1.0, 0.25 };
 
 	auto velGenerator = std::make_shared<particles::generators::SphereVelGen>();
 	velGenerator->m_minVel = 0.1f;
@@ -88,7 +88,9 @@ bool AttractorEffect::initialize()
 	auto timeUpdater = std::make_shared<particles::updaters::BasicTimeUpdater>();
 	m_system->addUpdater(timeUpdater);
 
-	auto colorUpdater = std::make_shared<particles::updaters::BasicColorUpdater>();
+	auto colorUpdater = std::make_shared<particles::updaters::VelColorUpdater>();
+	colorUpdater->m_minVel = glm::vec4{ -0.5f, -0.5f, -0.5f, 0.0f };
+	colorUpdater->m_maxVel = glm::vec4{ 2.0f, 2.0f, 2.0f, 2.0f };
 	m_system->addUpdater(colorUpdater);
 
 	m_attractors = std::make_shared<particles::updaters::AttractorUpdater>();

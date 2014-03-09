@@ -22,6 +22,7 @@
 #include "effect.h"
 #include "tunnelEffect.h"
 #include "attractorEffect.h"
+#include "fountainEffect.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ using namespace std;
 std::string Globals::ApplicationWindowName = "Particles Tests";
 
 ShaderProgram mProgram;
-std::shared_ptr<IEffect> gEffects[2];
+std::shared_ptr<IEffect> gEffects[3];
 IEffect *gCurrentEffect = nullptr;
 int gCurrentEffectID = 0;
 int gSelectedEffect = 0;
@@ -90,6 +91,8 @@ bool initApp()
 	gEffects[0]->initialize();
 	gEffects[1] = std::make_shared<AttractorEffect>();
 	gEffects[1]->initialize();
+	gEffects[2] = std::make_shared<FountainEffect>();
+	gEffects[2]->initialize();
 	gCurrentEffectID = 0;
 	gCurrentEffect = gEffects[0].get();
 
@@ -107,7 +110,7 @@ bool initApp()
 	ui::AddTweakDir3f("camera", &camera.cameraDir.x, "");
 	ui::AddTweak("camera distance", &camera.camDistance, "min=0.05 max=4.0 step=0.01");
 	ui::AddSeparator();
-	ui::AddTweak<int>("effect id", &gSelectedEffect, "min=0 max=1");
+	ui::AddTweak<int>("effect id", &gSelectedEffect, "min=0 max=2");
 	gCurrentEffect->addUI();
 	
 	return true;

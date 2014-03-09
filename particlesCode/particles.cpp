@@ -93,14 +93,14 @@ namespace particles
 
 	void ParticleEmitter::emit(double dt, ParticleData *p)
 	{
-		const size_t maxNewParticles = (int)(dt*m_emitRate);
+		const size_t maxNewParticles = static_cast<size_t>(dt*m_emitRate);
 		const size_t startId = p->m_countAlive;
 		const size_t endId = std::min(startId + maxNewParticles, p->m_count);
 
 		for (auto &gen : m_generators)
 			gen->generate(dt, p, startId, endId);
 
-		for (unsigned int i = startId; i < endId; ++i)
+		for (size_t i = startId; i < endId; ++i)
 		{
 			p->wake(i);
 		}

@@ -13,8 +13,16 @@ namespace particles
 		public:
 			glm::vec4 m_globalAcceleration{ 0.0f };
 		public:
-			EulerUpdater() { }
+			virtual void update(double dt, ParticleData *p) override;
+		};
 
+		// collision with the floor :) todo: implement a collision model
+		class FloorUpdater : public particles::ParticleUpdater
+		{
+		public:
+			float m_floorY{ 0.0f };
+			float m_bounceFactor{ 0.5f };
+		public:
 			virtual void update(double dt, ParticleData *p) override;
 		};
 
@@ -23,8 +31,6 @@ namespace particles
 		protected:
 			std::vector<glm::vec4> m_attractors; // .w is force
 		public:
-			AttractorUpdater() { }
-
 			virtual void update(double dt, ParticleData *p) override;
 
 			size_t collectionSize() const { return m_attractors.size(); }
@@ -35,16 +41,30 @@ namespace particles
 		class BasicColorUpdater : public ParticleUpdater
 		{
 		public:
-			BasicColorUpdater() { }
+			virtual void update(double dt, ParticleData *p) override;
+		};
 
+		class PosColorUpdater : public ParticleUpdater
+		{
+		public:
+			glm::vec4 m_minPos{ 0.0 };
+			glm::vec4 m_maxPos{ 1.0 };
+		public:
+			virtual void update(double dt, ParticleData *p) override;
+		};
+
+		class VelColorUpdater : public ParticleUpdater
+		{
+		public:
+			glm::vec4 m_minVel{ 0.0 };
+			glm::vec4 m_maxVel{ 1.0 };
+		public:
 			virtual void update(double dt, ParticleData *p) override;
 		};
 
 		class BasicTimeUpdater : public ParticleUpdater
 		{
 		public:
-			BasicTimeUpdater() { }
-
 			virtual void update(double dt, ParticleData *p) override;
 		};
 	}
