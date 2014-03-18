@@ -57,6 +57,8 @@ double gpuUpdateTime = 0;
 GpuTimerQuery gpuRender;
 double gpuRenderTime = 0;
 
+bool gAnimationOn = false;
+
 ///////////////////////////////////////////////////////////////////////////////
 bool initApp() 
 {
@@ -99,18 +101,19 @@ bool initApp()
 	gpuUpdate.init();
 	gpuRender.init();
 
-	ui::AddVar<int>("particles", &gNumParticles, "");
-	ui::AddVar<int>("alive", &gNumAlive, "");
-	ui::AddVar<double>("cpu particles", &cpuParticlesUpdate.m_time, "precision=3 group=timers");
-	ui::AddVar<double>("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3 group=timers");
+	ui::AddTweak("animate", &gAnimationOn, "");
+	ui::AddVar("particles", &gNumParticles, "");
+	ui::AddVar("alive", &gNumAlive, "");
+	ui::AddVar("cpu particles", &cpuParticlesUpdate.m_time, "precision=3 group=timers");
+	ui::AddVar("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3 group=timers");
 
-	ui::AddVar<double>("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
-	ui::AddVar<double>("gpu render", &gpuRender.getTime(), "precision=3 group=timers");		
+	ui::AddVar("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
+	ui::AddVar("gpu render", &gpuRender.getTime(), "precision=3 group=timers");		
 
 	ui::AddTweakDir3f("camera", &camera.cameraDir.x, "");
 	ui::AddTweak("camera distance", &camera.camDistance, "min=0.05 max=4.0 step=0.01");
 	ui::AddSeparator();
-	ui::AddTweak<int>("effect id", &gSelectedEffect, "min=0 max=2");
+	ui::AddTweak("effect id", &gSelectedEffect, "min=0 max=2");
 	gCurrentEffect->addUI();
 	
 	return true;
@@ -138,8 +141,12 @@ void changeSize(int w, int h)
 ///////////////////////////////////////////////////////////////////////////////
 void processNormalKeys(unsigned char key, int x, int y) 
 {
-	if (key == 27) 
+	if (key == 27)
 		exit(0);
+	else if (key == ' ')
+		gAnimationOn = !gAnimationOn;
+	else if (key == 'r')
+		gCurrentEffect->reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -179,6 +186,9 @@ void processMousePassiveMotion(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
+	if (!gAnimationOn)
+		return;
+
 	if (gSelectedEffect != gCurrentEffectID)
 	{
 		gCurrentEffect->removeUI();

@@ -7,7 +7,7 @@ bool AttractorEffect::initialize()
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = 100000;
+	const size_t NUM_PARTICLES = 250000;
 	m_system = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
 
 	//

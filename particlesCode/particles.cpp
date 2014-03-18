@@ -140,6 +140,11 @@ namespace particles
 		//ParticleData::copyOnlyAlive(&m_particles, &m_aliveParticles);
 	}
 
+	void ParticleSystem::reset()
+	{
+		m_particles.m_countAlive = 0;
+	}
+
 	size_t ParticleSystem::computeMemoryUsage(const ParticleSystem &p)
 	{
 		return 2 * ParticleData::computeMemoryUsage(p.m_particles);

@@ -52,7 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)../particlesCode</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../particlesCode;$(ProjectDir)../ext</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -69,7 +69,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(ProjectDir)../particlesCode</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)../particlesCode;$(ProjectDir)../ext</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
@@ -80,10 +80,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\particlesCode\particleGenerators.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
+    <ClInclude Include="..\particlesCode\particleUpdaters.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\particlesCode\particleGenerators.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
+    <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
     <ClCompile Include="testMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

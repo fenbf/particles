@@ -90,6 +90,7 @@ namespace particles
 		ParticleSystem &operator=(const ParticleSystem &) = delete;
 
 		virtual void update(double dt);
+		virtual void reset();
 
 		virtual size_t numAllParticles() const { return m_particles.m_count; }
 		virtual size_t numAliveParticles() const { return m_particles.m_countAlive; }

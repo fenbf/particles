@@ -16,6 +16,9 @@
 #include "gl_comp_3_3.h"
 #include "wgl_wgl.h"
 #include "freeglut.h"
+
+//#define GLM_FORCE_SSE2
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -28,8 +31,8 @@
     #include <AntTweakBar.h>
 #endif
 
-#define WND_START_WIDTH  800
-#define WND_START_HEIGHT 600
+#define WND_START_WIDTH  1280
+#define WND_START_HEIGHT 720
 
 #ifndef M_PI
     #define M_PI 3.141592
