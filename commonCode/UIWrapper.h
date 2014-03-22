@@ -10,6 +10,20 @@
     #include <AntTweakBar.h>
 #endif
 
+struct Globals
+{
+	static std::string ApplicationWindowName;
+	static double AppTime;	// global app time in seconds
+	static float Fps;
+
+	static unsigned int MainWindowWidth;
+	static unsigned int MainWindowHeight;
+
+#ifdef _EX_USE_ANTTWEAKBAR
+	static TwBar *MainTweakBar;
+#endif
+};
+
 namespace ui
 {
 #ifdef _EX_USE_ANTTWEAKBAR

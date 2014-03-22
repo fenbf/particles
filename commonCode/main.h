@@ -6,9 +6,6 @@
 
 #pragma once
 
-#define _EX_USE_ANTTWEAKBAR
-#define _EX_SHOW_CONSOLE
-
 #include <string>
 #include <utility>
 #include <memory>
@@ -23,35 +20,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "globals.h"
+
 #ifndef _MSC_VER // anttweakbar only in msvc
     #undef _EX_USE_ANTTWEAKBAR
 #endif
-
-#ifdef _EX_USE_ANTTWEAKBAR
-    #include <AntTweakBar.h>
-#endif
-
-#define WND_START_WIDTH  1280
-#define WND_START_HEIGHT 720
 
 #ifndef M_PI
     #define M_PI 3.141592
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-struct Globals 
-{
-    static std::string ApplicationWindowName;
-    static double AppTime;	// global app time in seconds
-    static float Fps;
-
-    static unsigned int MainWindowWidth;
-    static unsigned int MainWindowHeight;
-
-#ifdef _EX_USE_ANTTWEAKBAR
-    static TwBar *MainTweakBar;
-#endif
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 bool initApp();

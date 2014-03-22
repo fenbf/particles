@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -78,7 +78,7 @@
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -97,6 +97,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\commonCode\globals.cpp" />
     <ClCompile Include="..\commonCode\Init.cpp" />
     <ClCompile Include="..\commonCode\Log.cpp" />
     <ClCompile Include="..\commonCode\main.cpp" />
@@ -120,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\commonCode\commonCode.h" />
+    <ClInclude Include="..\commonCode\globals.h" />
     <ClInclude Include="..\commonCode\Init.h" />
     <ClInclude Include="..\commonCode\Log.h" />
     <ClInclude Include="..\commonCode\main.h" />

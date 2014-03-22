@@ -1,5 +1,4 @@
 #include "attractorEffect.h"
-#include "main.h"
 #include "UIWrapper.h"
 
 bool AttractorEffect::initialize()

@@ -55,7 +55,7 @@ double gpuUpdateTime = 0;
 GpuTimerQuery gpuRender;
 double gpuRenderTime = 0;
 
-bool gAnimationOn = false;
+bool gAnimationOn = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 bool initApp() 
@@ -89,10 +89,13 @@ bool initApp()
 
 	gEffects[0] = EffectFactory::create("tunnel");
 	gEffects[0]->initialize();
+	gEffects[0]->initializeRenderer();
 	gEffects[1] = EffectFactory::create("attractors");
 	gEffects[1]->initialize();
+	gEffects[1]->initializeRenderer();
 	gEffects[2] = EffectFactory::create("fountain");
 	gEffects[2]->initialize();
+	gEffects[2]->initializeRenderer();
 	gCurrentEffectID = 0;
 	gCurrentEffect = gEffects[0].get();
 
