@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="cpuTest.cpp" />
+    <ClCompile Include="..\particlesCode\particles.cpp">
+      <Filter>particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\particleGenerators.cpp">
+      <Filter>particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\particleUpdaters.cpp">
+      <Filter>particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\attractorEffect.cpp">
+      <Filter>effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\effectFactory.cpp">
+      <Filter>effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\effect.cpp">
+      <Filter>effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\fountainEffect.cpp">
+      <Filter>effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\tunnelEffect.cpp">
+      <Filter>effects</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\particlesCode\particleGenerators.h">
+      <Filter>particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\particles.h">
+      <Filter>particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\particleUpdaters.h">
+      <Filter>particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\attractorEffect.h">
+      <Filter>effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\effect.h">
+      <Filter>effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\effectFactory.h">
+      <Filter>effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\fountainEffect.h">
+      <Filter>effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\tunnelEffect.h">
+      <Filter>effects</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="particles">
+      <UniqueIdentifier>{c26ca081-395a-4306-830d-823e10882fd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="effects">
+      <UniqueIdentifier>{de60a905-8444-4d52-b125-7b43097328fc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
