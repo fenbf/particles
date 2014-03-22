@@ -105,18 +105,18 @@
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
+    <ClCompile Include="..\particlesCode\attractorEffect.cpp" />
+    <ClCompile Include="..\particlesCode\effect.cpp" />
+    <ClCompile Include="..\particlesCode\effectFactory.cpp" />
+    <ClCompile Include="..\particlesCode\fountainEffect.cpp" />
     <ClCompile Include="..\particlesCode\particleGenerators.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
-    <ClCompile Include="attractorEffect.cpp" />
+    <ClCompile Include="..\particlesCode\tunnelEffect.cpp" />
     <ClCompile Include="drawTest.cpp" />
     <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
-    <ClCompile Include="effect.cpp" />
-    <ClCompile Include="effectFactory.cpp" />
-    <ClCompile Include="fountainEffect.cpp" />
-    <ClCompile Include="tunnelEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\commonCode\commonCode.h" />
@@ -129,15 +129,15 @@
     <ClInclude Include="..\commonCode\TextureLoader.h" />
     <ClInclude Include="..\commonCode\TimeQuery.h" />
     <ClInclude Include="..\commonCode\UIWrapper.h" />
+    <ClInclude Include="..\particlesCode\attractorEffect.h" />
+    <ClInclude Include="..\particlesCode\effect.h" />
+    <ClInclude Include="..\particlesCode\effectFactory.h" />
+    <ClInclude Include="..\particlesCode\fountainEffect.h" />
     <ClInclude Include="..\particlesCode\particleGenerators.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />
     <ClInclude Include="..\particlesCode\particleUpdaters.h" />
-    <ClInclude Include="attractorEffect.h" />
-    <ClInclude Include="effect.h" />
-    <ClInclude Include="effectFactory.h" />
-    <ClInclude Include="fountainEffect.h" />
-    <ClInclude Include="tunnelEffect.h" />
+    <ClInclude Include="..\particlesCode\tunnelEffect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
