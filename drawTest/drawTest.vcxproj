@@ -114,6 +114,7 @@
     <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
     <ClCompile Include="effect.cpp" />
+    <ClCompile Include="effectFactory.cpp" />
     <ClCompile Include="fountainEffect.cpp" />
     <ClCompile Include="tunnelEffect.cpp" />
   </ItemGroup>
@@ -134,6 +135,7 @@
     <ClInclude Include="..\particlesCode\particleUpdaters.h" />
     <ClInclude Include="attractorEffect.h" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="effectFactory.h" />
     <ClInclude Include="fountainEffect.h" />
     <ClInclude Include="tunnelEffect.h" />
   </ItemGroup>

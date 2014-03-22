@@ -21,7 +21,7 @@ namespace particles
 
 	void ParticleData::kill(size_t id)
 	{
-		if (m_countAlive > 0) // maybe this if can be removed?
+		//if (m_countAlive > 0) // maybe this if can be removed?
 		{
 			m_alive[id] = false;
 			swapData(id, m_countAlive - 1);
@@ -31,7 +31,7 @@ namespace particles
 
 	void ParticleData::wake(size_t id)
 	{
-		if (m_countAlive < m_count) // maybe this if can be removed?
+		//if (m_countAlive < m_count) // maybe this if can be removed?
 		{
 			m_alive[id] = true;
 			//swapData(id, m_countAlive);
@@ -41,22 +41,22 @@ namespace particles
 
 	void ParticleData::swapData(size_t a, size_t b)
 	{
-		std::swap(m_pos[a], m_pos[b]);
+		/*std::swap(m_pos[a], m_pos[b]);
 		std::swap(m_col[a], m_col[b]);
 		std::swap(m_startCol[a], m_startCol[b]);
 		std::swap(m_endCol[a], m_endCol[b]);
 		std::swap(m_vel[a], m_vel[b]);
 		std::swap(m_acc[a], m_acc[b]);
 		std::swap(m_time[a], m_time[b]);
-		std::swap(m_alive[a], m_alive[b]);
-		/*m_pos[a] = m_pos[b];
+		std::swap(m_alive[a], m_alive[b]);*/
+		m_pos[a] = m_pos[b];
 		m_col[a] = m_col[b];
 		m_startCol[a] = m_startCol[b];
 		m_endCol[a] = m_endCol[b];
 		m_vel[a] = m_vel[b];
 		m_acc[a] = m_acc[b];
 		m_time[a] = m_time[b];
-		m_alive[a] = m_alive[b];*/
+		//m_alive[a] = m_alive[b];*/
 	}
 
 	void ParticleData::copyOnlyAlive(const ParticleData *source, ParticleData *destination)
@@ -95,7 +95,7 @@ namespace particles
 	{
 		const size_t maxNewParticles = static_cast<size_t>(dt*m_emitRate);
 		const size_t startId = p->m_countAlive;
-		const size_t endId = std::min(startId + maxNewParticles, p->m_count);
+		const size_t endId = std::min(startId + maxNewParticles, p->m_count-1);
 
 		for (auto &gen : m_generators)
 			gen->generate(dt, p, startId, endId);

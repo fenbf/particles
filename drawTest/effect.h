@@ -9,6 +9,7 @@ public:
 	virtual ~IEffect() { }
 
 	virtual bool initialize() = 0;
+	virtual bool initializeRenderer() = 0;
 	virtual void reset() = 0;
 	virtual void clean() = 0;
 	virtual void addUI() = 0;

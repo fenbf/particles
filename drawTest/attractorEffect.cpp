@@ -104,10 +104,15 @@ bool AttractorEffect::initialize()
 	eulerUpdater->m_globalAcceleration = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
 	m_system->addUpdater(eulerUpdater);
 
+	m_zScale = 1.0f;
+
+	return true;
+}
+
+bool AttractorEffect::initializeRenderer()
+{
 	m_renderer = std::make_shared<particles::GLParticleRenderer>();
 	m_renderer->generate(m_system.get(), false);
-
-	m_zScale = 1.0f;
 
 	return true;
 }

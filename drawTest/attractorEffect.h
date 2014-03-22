@@ -22,6 +22,7 @@ public:
 	~AttractorEffect() { }
 
 	bool initialize() override;
+	bool initializeRenderer() override;
 	void reset() override { m_system->reset(); }
 	void clean() override;
 	void addUI() override;

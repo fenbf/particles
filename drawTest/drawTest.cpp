@@ -20,9 +20,7 @@
 #include "TimeQuery.h"
 
 #include "effect.h"
-#include "tunnelEffect.h"
-#include "attractorEffect.h"
-#include "fountainEffect.h"
+#include "effectFactory.h"
 
 using namespace std;
 
@@ -89,11 +87,11 @@ bool initApp()
 	mProgram.uniform1i("tex", 0);
 	mProgram.disable();
 
-	gEffects[0] = std::make_shared<TunnelEffect>();
+	gEffects[0] = EffectFactory::create("tunnel");
 	gEffects[0]->initialize();
-	gEffects[1] = std::make_shared<AttractorEffect>();
+	gEffects[1] = EffectFactory::create("attractors");
 	gEffects[1]->initialize();
-	gEffects[2] = std::make_shared<FountainEffect>();
+	gEffects[2] = EffectFactory::create("fountain");
 	gEffects[2]->initialize();
 	gCurrentEffectID = 0;
 	gCurrentEffect = gEffects[0].get();

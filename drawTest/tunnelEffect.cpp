@@ -53,8 +53,13 @@ bool TunnelEffect::initialize()
 
 	auto eulerUpdater = std::make_shared<particles::updaters::EulerUpdater>();
 	eulerUpdater->m_globalAcceleration = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
-	m_system->addUpdater(eulerUpdater);
+	m_system->addUpdater(eulerUpdater);	
 
+	return true;
+}
+
+bool TunnelEffect::initializeRenderer()
+{
 	m_renderer = std::make_shared<particles::GLParticleRenderer>();
 	m_renderer->generate(m_system.get(), false);
 

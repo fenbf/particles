@@ -123,6 +123,9 @@ namespace particles
 		{
 			unsigned int endId = p->m_countAlive;
 			const float localDT = (float)dt;
+
+			if (endId == 0) return;
+
 			for (size_t i = 0; i < endId; ++i)
 			{
 				p->m_time[i].x -= localDT;

@@ -55,6 +55,11 @@ bool FountainEffect::initialize()
 	m_floorUpdater = std::make_shared<particles::updaters::FloorUpdater>();
 	m_system->addUpdater(m_floorUpdater);
 
+	return true;
+}
+
+bool FountainEffect::initializeRenderer()
+{
 	m_renderer = std::make_shared<particles::GLParticleRenderer>();
 	m_renderer->generate(m_system.get(), false);
 
