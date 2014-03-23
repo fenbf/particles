@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "gl_includes.h"
+
 /// manages single shader loading ad compilation
 class Shader
 {

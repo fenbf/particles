@@ -10,19 +10,7 @@
     #include <AntTweakBar.h>
 #endif
 
-struct Globals
-{
-	static std::string ApplicationWindowName;
-	static double AppTime;	// global app time in seconds
-	static float Fps;
-
-	static unsigned int MainWindowWidth;
-	static unsigned int MainWindowHeight;
-
-#ifdef _EX_USE_ANTTWEAKBAR
-	static TwBar *MainTweakBar;
-#endif
-};
+#include "globals.h"
 
 namespace ui
 {
@@ -77,11 +65,11 @@ namespace ui
 		TwAddSeparator(Globals::MainTweakBar, "sep", "");
 	}
 #else
-	inline template <typename T> void AddTweak(const char *name, T *var, const char *def) { }
+	template <typename T> void AddTweak(const char *name, T *var, const char *def) { }
 	inline void AddTweakColor3f(const char *name, float *col, const char *def) { }
 	inline void AddTweakColor4f(const char *name, float *col, const char *def) { }
 	inline void AddTweakDir3f(const char *name, float *dir, const char *def) { }
-	inline template <typename T> void AddVar(const char *name, T *var, const char *def) { }
+	template <typename T> void AddVar(const char *name, T *var, const char *def) { }
 	inline void RemoveVar(const char *name) { }
 	inline void RemoveAllVars() { }
 	inline void AddSeparator() { }

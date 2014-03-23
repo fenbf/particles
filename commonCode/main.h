@@ -6,22 +6,6 @@
 
 #pragma once
 
-#include <string>
-#include <utility>
-#include <memory>
-#include <chrono>
-#include "gl_comp_3_3.h"
-#include "wgl_wgl.h"
-#include "freeglut.h"
-
-//#define GLM_FORCE_SSE2
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
-#include "globals.h"
-
 #ifndef _MSC_VER // anttweakbar only in msvc
     #undef _EX_USE_ANTTWEAKBAR
 #endif

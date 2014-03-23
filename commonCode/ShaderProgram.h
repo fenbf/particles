@@ -8,7 +8,9 @@
 #pragma once
 
 #include <vector>
+#include <assert.h>
 #include "Log.h"
+#include "gl_includes.h"
 
 class Shader;
 

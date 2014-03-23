@@ -1,15 +1,17 @@
 #pragma once
 
+#include <memory>
+
 namespace particles
 {
 
 	class ParticleSystem;
 
-	class ParticleRenderer
+	class IParticleRenderer
 	{
 	public:
-		ParticleRenderer() { }
-		virtual ~ParticleRenderer() { }
+		IParticleRenderer() { }
+		virtual ~IParticleRenderer() { }
 
 		virtual void generate(ParticleSystem *sys, bool useQuads) = 0;
 		virtual void destroy() = 0;
@@ -17,21 +19,9 @@ namespace particles
 		virtual void render() = 0;
 	};
 
-	class GLParticleRenderer : ParticleRenderer
+	class RendererFactory
 	{
-	protected:
-		ParticleSystem *m_system{ nullptr };
-
-		unsigned int m_bufPos{ 0 };
-		unsigned int m_bufCol{ 0 };
-		unsigned int m_vao{ 0 };
 	public:
-		GLParticleRenderer() { }
-		~GLParticleRenderer() { destroy(); }
-
-		void generate(ParticleSystem *sys, bool useQuads) override;
-		void destroy() override;
-		void update() override;
-		void render() override;
+		static std::shared_ptr<IParticleRenderer> create(const char *name);
 	};
 }

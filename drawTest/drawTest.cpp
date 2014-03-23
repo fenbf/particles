@@ -6,12 +6,18 @@
  */
 
 #include "main.h"
+#include "globals.h"
 #include "Init.h"
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "ShaderLoader.h"
 #include "TextureLoader.h"
 #include "UIWrapper.h"
+
+#include "freeglut.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "Particles.h"
 #include "ParticleUpdaters.h"
@@ -20,7 +26,6 @@
 #include "TimeQuery.h"
 
 #include "effect.h"
-#include "effectFactory.h"
 
 using namespace std;
 

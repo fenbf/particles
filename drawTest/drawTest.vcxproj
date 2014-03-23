@@ -108,8 +108,8 @@
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
     <ClCompile Include="..\particlesCode\attractorEffect.cpp" />
     <ClCompile Include="..\particlesCode\effect.cpp" />
-    <ClCompile Include="..\particlesCode\effectFactory.cpp" />
     <ClCompile Include="..\particlesCode\fountainEffect.cpp" />
+    <ClCompile Include="..\particlesCode\glParticleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particleGenerators.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\particles.cpp" />
@@ -131,10 +131,11 @@
     <ClInclude Include="..\commonCode\TextureLoader.h" />
     <ClInclude Include="..\commonCode\TimeQuery.h" />
     <ClInclude Include="..\commonCode\UIWrapper.h" />
+    <ClInclude Include="..\ext\gl_includes.h" />
     <ClInclude Include="..\particlesCode\attractorEffect.h" />
     <ClInclude Include="..\particlesCode\effect.h" />
-    <ClInclude Include="..\particlesCode\effectFactory.h" />
     <ClInclude Include="..\particlesCode\fountainEffect.h" />
+    <ClInclude Include="..\particlesCode\glParticleRenderer.h" />
     <ClInclude Include="..\particlesCode\particleGenerators.h" />
     <ClInclude Include="..\particlesCode\particleRenderer.h" />
     <ClInclude Include="..\particlesCode\particles.h" />

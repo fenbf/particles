@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 class IEffect
 {
 public:
@@ -22,4 +24,10 @@ public:
 
 	virtual int numAllParticles() = 0;
 	virtual int numAliveParticles() = 0;
+};
+
+class EffectFactory
+{
+public:
+	static std::shared_ptr<IEffect> create(const char *name);
 };

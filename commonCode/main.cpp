@@ -8,7 +8,20 @@
 #include "main.h"
 #include "Init.h"
 #include "Log.h"
+#include "globals.h"
+#include "UIWrapper.h"
 
+#include <string>
+#include <memory>
+#include "gl_comp_3_3.h"
+#include "wgl_wgl.h"
+#include "freeglut.h"
+
+//#define GLM_FORCE_SSE2
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #ifndef _EX_SHOW_CONSOLE
 	#pragma comment( linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"" )

@@ -60,7 +60,7 @@ bool FountainEffect::initialize()
 
 bool FountainEffect::initializeRenderer()
 {
-	m_renderer = std::make_shared<particles::GLParticleRenderer>();
+	m_renderer = particles::RendererFactory::create("gl");
 	m_renderer->generate(m_system.get(), false);
 
 	return true;

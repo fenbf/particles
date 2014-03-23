@@ -14,9 +14,6 @@
     <ClCompile Include="..\particlesCode\attractorEffect.cpp">
       <Filter>effects</Filter>
     </ClCompile>
-    <ClCompile Include="..\particlesCode\effectFactory.cpp">
-      <Filter>effects</Filter>
-    </ClCompile>
     <ClCompile Include="..\particlesCode\effect.cpp">
       <Filter>effects</Filter>
     </ClCompile>
@@ -25,6 +22,12 @@
     </ClCompile>
     <ClCompile Include="..\particlesCode\tunnelEffect.cpp">
       <Filter>effects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\particleRenderer.cpp">
+      <Filter>particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\particlesCode\fake_glParticleRenderer.cpp">
+      <Filter>particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -43,14 +46,14 @@
     <ClInclude Include="..\particlesCode\effect.h">
       <Filter>effects</Filter>
     </ClInclude>
-    <ClInclude Include="..\particlesCode\effectFactory.h">
-      <Filter>effects</Filter>
-    </ClInclude>
     <ClInclude Include="..\particlesCode\fountainEffect.h">
       <Filter>effects</Filter>
     </ClInclude>
     <ClInclude Include="..\particlesCode\tunnelEffect.h">
       <Filter>effects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\particlesCode\particleRenderer.h">
+      <Filter>particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
