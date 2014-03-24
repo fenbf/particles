@@ -13,8 +13,7 @@
 
 #include <string>
 #include <memory>
-#include "gl_comp_3_3.h"
-#include "wgl_wgl.h"
+#include "gl_includes.h"
 #include "freeglut.h"
 
 //#define GLM_FORCE_SSE2

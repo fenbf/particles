@@ -7,6 +7,7 @@
 #include "commonCode.h"
 #include "init.h"
 #include "Log.h"
+#include "freeglut.h"
 
 
 void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,

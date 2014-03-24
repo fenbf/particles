@@ -5,10 +5,9 @@
 *	@date May 2012
 */
 
-#include "commonCode.h"
-
-#include "Init.h"
 #include "TimeQuery.h"
+#include "commonCode.h"
+#include "Init.h"
 //#include "Log.h"
 
 ///////////////////////////////////////////////////////////////////////////////

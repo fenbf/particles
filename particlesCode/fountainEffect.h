@@ -1,7 +1,7 @@
 #pragma once
 
 #include "effect.h"
-#include <utility>
+#include <memory>
 #include "particles.h"
 #include "particleGenerators.h"
 #include "particleRenderer.h"
@@ -22,7 +22,7 @@ public:
 	FountainEffect() { }
 	~FountainEffect() { }
 
-	bool initialize() override;
+	bool initialize(size_t numParticles) override;
 	bool initializeRenderer() override;
 	void reset() override { m_system->reset(); }
 	void clean() override;

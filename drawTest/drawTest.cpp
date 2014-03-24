@@ -93,13 +93,13 @@ bool initApp()
 	mProgram.disable();
 
 	gEffects[0] = EffectFactory::create("tunnel");
-	gEffects[0]->initialize();
+	gEffects[0]->initialize(IEffect::DEFAULT_PARTICLE_NUM_FLAG);
 	gEffects[0]->initializeRenderer();
 	gEffects[1] = EffectFactory::create("attractors");
-	gEffects[1]->initialize();
+	gEffects[1]->initialize(IEffect::DEFAULT_PARTICLE_NUM_FLAG);
 	gEffects[1]->initializeRenderer();
 	gEffects[2] = EffectFactory::create("fountain");
-	gEffects[2]->initialize();
+	gEffects[2]->initialize(IEffect::DEFAULT_PARTICLE_NUM_FLAG);
 	gEffects[2]->initializeRenderer();
 	gCurrentEffectID = 0;
 	gCurrentEffect = gEffects[0].get();

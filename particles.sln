@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Windows Desktop
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "drawTest", "drawTest.vcxproj", "{AC450F95-FB27-481C-9443-5E4DEB91F9AF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "drawTest", "drawTest\drawTest.vcxproj", "{AC450F95-FB27-481C-9443-5E4DEB91F9AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpuTest", "..\cpuTest\cpuTest.vcxproj", "{E278A6BE-A6CE-4FC0-8074-11E426A34AA2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpuTest", "cpuTest\cpuTest.vcxproj", "{E278A6BE-A6CE-4FC0-8074-11E426A34AA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

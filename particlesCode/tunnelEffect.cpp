@@ -2,12 +2,12 @@
 #include "main.h"
 #include "UIWrapper.h"
 
-bool TunnelEffect::initialize()
+bool TunnelEffect::initialize(size_t numParticles)
 {
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = 100000;
+	const size_t NUM_PARTICLES = numParticles == 0 ? 10000 : numParticles;
 	m_system = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
 
 	//

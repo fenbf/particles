@@ -106,6 +106,7 @@
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
+    <ClCompile Include="..\ext\gl_core_3_3.c" />
     <ClCompile Include="..\particlesCode\attractorEffect.cpp" />
     <ClCompile Include="..\particlesCode\effect.cpp" />
     <ClCompile Include="..\particlesCode\fountainEffect.cpp" />
@@ -116,7 +117,6 @@
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
     <ClCompile Include="..\particlesCode\tunnelEffect.cpp" />
     <ClCompile Include="drawTest.cpp" />
-    <ClCompile Include="..\ext\gl_comp_3_3.c" />
     <ClCompile Include="..\ext\wgl_wgl.c" />
   </ItemGroup>
   <ItemGroup>

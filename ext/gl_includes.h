@@ -1,2 +1,2 @@
-#include "gl_comp_3_3.h"
+#include "gl_core_3_3.h"
 #include "wgl_wgl.h"

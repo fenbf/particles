@@ -26,7 +26,7 @@
     <ClCompile Include="..\particlesCode\particleRenderer.cpp">
       <Filter>particles</Filter>
     </ClCompile>
-    <ClCompile Include="..\particlesCode\fake_glParticleRenderer.cpp">
+    <ClCompile Include="fake_glParticleRenderer.cpp">
       <Filter>particles</Filter>
     </ClCompile>
   </ItemGroup>

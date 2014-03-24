@@ -6,6 +6,7 @@
 */
 
 #include <chrono>
+#include "gl_includes.h"
 
 class CpuTimeQuery
 {

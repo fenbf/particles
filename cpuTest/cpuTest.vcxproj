@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClCompile Include="..\particlesCode\attractorEffect.cpp" />
     <ClCompile Include="..\particlesCode\effect.cpp" />
-    <ClCompile Include="..\particlesCode\fake_glParticleRenderer.cpp" />
     <ClCompile Include="..\particlesCode\fountainEffect.cpp" />
     <ClCompile Include="..\particlesCode\particleGenerators.cpp" />
     <ClCompile Include="..\particlesCode\particleRenderer.cpp" />
@@ -21,6 +20,7 @@
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
     <ClCompile Include="..\particlesCode\tunnelEffect.cpp" />
     <ClCompile Include="cpuTest.cpp" />
+    <ClCompile Include="fake_glParticleRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\particlesCode\attractorEffect.h" />

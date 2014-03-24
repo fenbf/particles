@@ -5,12 +5,14 @@
 class IEffect
 {
 public:
+	static const size_t DEFAULT_PARTICLE_NUM_FLAG = 0;	// for initialize method
 	//enum Name { };
 public:
 	IEffect() { }
 	virtual ~IEffect() { }
 
-	virtual bool initialize() = 0;
+	// creates the effect with desired num of particles, (0 means default for the effect)
+	virtual bool initialize(size_t numParticles) = 0;
 	virtual bool initializeRenderer() = 0;
 	virtual void reset() = 0;
 	virtual void clean() = 0;
