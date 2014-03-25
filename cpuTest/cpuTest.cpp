@@ -1,5 +1,4 @@
 #include <iostream>
-#include <chrono>
 #include <Windows.h>
 
 #include "glm\glm.hpp"
@@ -46,7 +45,7 @@ int main()
 			}
 			QueryPerformanceCounter(&endTime);
 			elapsedMicroseconds.QuadPart = endTime.QuadPart - startTime.QuadPart;
-			elapsedMicroseconds.QuadPart *= 10000;
+			elapsedMicroseconds.QuadPart *= 100000;
 			elapsedMicroseconds.QuadPart /= freq.QuadPart;
 
 			std::cout << elapsedMicroseconds.QuadPart << "\t";
