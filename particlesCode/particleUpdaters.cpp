@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <glm/common.hpp>
 #include <glm/gtc/random.hpp>
+#include <xmmintrin.h>
 
 namespace particles
 {
@@ -10,18 +11,42 @@ namespace particles
 	{
 		void EulerUpdater::update(double dt, ParticleData *p)
 		{
-			const glm::vec4 globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
+			__declspec(align(16)) const glm::vec4 globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
 			const float localDT = (float)dt;
+
+			__m128 ga = _mm_set_ps(dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0f);
+			__m128 *pa, *pb, pc;
+			__m128 ldt = _mm_set_ps1(localDT);
 
 			const unsigned int endId = p->m_countAlive;
 			for (size_t i = 0; i < endId; ++i)
-				p->m_acc[i] += globalA;
+			{
+				pa = (__m128*)(&p->m_acc[i].x);
+				*pa = _mm_add_ps(*pa, ga);
+				//*pa = 
+				//_mm_store_ps(&p->m_acc[i].x, pb);
+				//p->m_acc[i] += globalA;
+			}
 
 			for (size_t i = 0; i < endId; ++i)
-				p->m_vel[i] += localDT * p->m_acc[i];
+			{
+				//p->m_vel[i] += localDT * p->m_acc[i];
+				pa = (__m128*)(&p->m_vel[i].x);
+				pb = (__m128*)(&p->m_acc[i].x);
+				pc = _mm_mul_ps(*pb, ldt);
+				*pa = _mm_add_ps(*pa, pc);
+				//_mm_store_ps(&p->m_vel[i].x, *pb);
+			}
 
 			for (size_t i = 0; i < endId; ++i)
-				p->m_pos[i] += localDT * p->m_vel[i];
+			{
+				//p->m_pos[i] += localDT * p->m_vel[i];
+				pa = (__m128*)(&p->m_pos[i].x);
+				pb = (__m128*)(&p->m_vel[i].x);
+				pc = _mm_mul_ps(*pb, ldt);
+				*pa = _mm_add_ps(*pa, pc);
+				//_mm_store_ps(&p->m_pos[i].x, pb);
+			}
 		}
 
 		void FloorUpdater::update(double dt, ParticleData *p)
@@ -76,9 +101,22 @@ namespace particles
 
 		void BasicColorUpdater::update(double dt, ParticleData *p)
 		{
+			__m128 pa, pb, pc, pd, pe, pf, pg;
+
+			__m128 one = _mm_set_ps1(1.0f);
+
 			const size_t endId = p->m_countAlive;
 			for (size_t i = 0; i < endId; ++i)
+			{
 				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], p->m_time[i].z);
+				//pa = _mm_set_ps1(p->m_time[i].z); // z
+				//pb = _mm_sub_ps(one, pa);         // 1-z
+				//_mm_store_ps(&p->m_col[i].x, pc); // c
+				//pd = _mm_mul_ps(pb, pc);          // c*(1-z)
+				//pe = _mm_mul_ps(pa, pc);          // c*z
+				//pa = _mm_add_ps(pd, pe);          // sum
+				//_mm_store_ps(&p->m_col[i].x, pa);
+			}
 		}
 
 		void PosColorUpdater::update(double dt, ParticleData *p)

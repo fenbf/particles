@@ -85,11 +85,11 @@ namespace particles
 		if (count > 0)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
-			float *ptr = (float *)(m_system->finalData()->m_pos.get());
+			float *ptr = (float *)(m_system->finalData()->m_pos);// .get());
 			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, ptr);
 
 			glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
-			ptr = (float*)(m_system->finalData()->m_col.get());
+			ptr = (float*)(m_system->finalData()->m_col);// .get());
 			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, ptr);
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);

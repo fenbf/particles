@@ -4,18 +4,32 @@
 
 namespace particles
 {
+	ParticleData::~ParticleData()
+	{
+		_aligned_free(m_pos);
+		_aligned_free(m_col);
+		_aligned_free(m_startCol);
+		_aligned_free(m_endCol);
+		_aligned_free(m_vel);
+		_aligned_free(m_acc);
+		_aligned_free(m_time);
+	}
+
 	void ParticleData::generate(size_t maxSize)
 	{
 		m_count = maxSize;
 		m_countAlive = 0;
 
-		m_pos.reset(new glm::vec4[maxSize]);
-		m_col.reset(new glm::vec4[maxSize]);
-		m_startCol.reset(new glm::vec4[maxSize]);
-		m_endCol.reset(new glm::vec4[maxSize]);
-		m_vel.reset(new glm::vec4[maxSize]);
-		m_acc.reset(new glm::vec4[maxSize]);
-		m_time.reset(new glm::vec4[maxSize]);
+		static_assert(sizeof(glm::vec4) == 4 * sizeof(float), "size is 16...");
+
+		m_pos      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_col      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_startCol = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_endCol   = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_vel      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_acc      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_time     = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+
 		m_alive.reset(new bool[maxSize]);
 	}
 
