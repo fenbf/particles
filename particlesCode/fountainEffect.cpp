@@ -19,15 +19,15 @@ bool FountainEffect::initialize(size_t numParticles)
 
 		// pos:
 		m_posGenerator = std::make_shared<particles::generators::BoxPosGen>();
-		m_posGenerator->m_pos = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
-		m_posGenerator->m_maxStartPosOffset = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
+		m_posGenerator->m_pos = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
+		m_posGenerator->m_maxStartPosOffset = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
 		particleEmitter->addGenerator(m_posGenerator);
 
 		m_colGenerator = std::make_shared<particles::generators::BasicColorGen>();
-		m_colGenerator->m_minStartCol = glm::vec4{ 0.7, 0.7, 0.7, 1.0 };
-		m_colGenerator->m_maxStartCol = glm::vec4{ 1.0, 1.0, 1.0, 1.0 };
-		m_colGenerator->m_minEndCol = glm::vec4{ 0.5, 0.0, 0.6, 0.0 };
-		m_colGenerator->m_maxEndCol = glm::vec4{ 0.7, 0.5, 1.0, 0.0 };
+		m_colGenerator->m_minStartCol = glm::vec4{ 0.7f, 0.7f, 0.7f, 1.0f };
+		m_colGenerator->m_maxStartCol = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+		m_colGenerator->m_minEndCol = glm::vec4{ 0.5f, 0.0f, 0.6f, 0.0f };
+		m_colGenerator->m_maxEndCol = glm::vec4{ 0.7f, 0.5f, 1.0f, 0.0f };
 		particleEmitter->addGenerator(m_colGenerator);
 
 		auto velGenerator = std::make_shared<particles::generators::BasicVelGen>();

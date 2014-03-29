@@ -20,7 +20,7 @@ namespace particles
 
 			for (size_t i = startId; i < endId; ++i)
 			{
-				p->m_pos[i] = glm::linearRand(posMin, posMax);
+				p->m_pos[i] = glm::simdVec4(glm::linearRand(posMin, posMax));
 			}
 		}
 
@@ -29,7 +29,7 @@ namespace particles
 			for (size_t i = startId; i < endId; ++i)
 			{
 				double ang = glm::linearRand(0.0, M_PI*2.0);
-				p->m_pos[i] = m_center + glm::vec4(m_radX*sin(ang), m_radY*cos(ang), 0.0, 1.0);
+				p->m_pos[i] = glm::simdVec4(m_center + glm::vec4(m_radX*sin(ang), m_radY*cos(ang), 0.0, 1.0));
 			}
 		}
 
@@ -37,8 +37,8 @@ namespace particles
 		{
 			for (size_t i = startId; i < endId; ++i)
 			{
-				p->m_startCol[i] = glm::linearRand(m_minStartCol, m_maxStartCol);
-				p->m_endCol[i] = glm::linearRand(m_minEndCol, m_maxEndCol);
+				p->m_startCol[i] = glm::simdVec4(glm::linearRand(m_minStartCol, m_maxStartCol));
+				p->m_endCol[i] = glm::simdVec4(glm::linearRand(m_minEndCol, m_maxEndCol));
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace particles
 		{
 			for (size_t i = startId; i < endId; ++i)
 			{
-				p->m_vel[i] = glm::linearRand(m_minStartVel, m_maxStartVel);
+				p->m_vel[i] = glm::simdVec4(glm::linearRand(m_minStartVel, m_maxStartVel));
 			}
 		}
 
@@ -68,11 +68,13 @@ namespace particles
 
 		void VelFromPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
+			glm::simdVec4 scalev;
 			for (size_t i = startId; i < endId; ++i)
 			{
 				float scale = static_cast<float>(glm::linearRand(m_minScale, m_maxScale));
-				glm::vec4 vel = (p->m_pos[i] - m_offset);
-				p->m_vel[i] = scale * vel;
+				scalev = glm::simdVec4(scale, scale, scale, scale);
+				glm::simdVec4 vel = (p->m_pos[i] - glm::simdVec4(m_offset));
+				p->m_vel[i] = glm::simdVec4(scalev * vel);
 			}
 		}
 

@@ -11,7 +11,7 @@ namespace particles
 	{
 		void EulerUpdater::update(double dt, ParticleData *p)
 		{
-			__declspec(align(16)) const glm::vec4 globalA{ dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0 };
+			__declspec(align(16)) const glm::simdVec4 globalA{ (float)dt * m_globalAcceleration.x, (float)dt * m_globalAcceleration.y, (float)dt * m_globalAcceleration.z, 0.0f };
 			const float localDT = (float)dt;
 
 			__m128 ga = _mm_set_ps(dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0f);
@@ -19,33 +19,57 @@ namespace particles
 			__m128 ldt = _mm_set_ps1(localDT);
 
 			const unsigned int endId = p->m_countAlive;
-			for (size_t i = 0; i < endId; ++i)
+			for (size_t i = 0; i < endId/2; ++i)
 			{
-				pa = (__m128*)(&p->m_acc[i].x);
+				 p->m_acc[i] += globalA;
+				 p->m_acc[i+1] += globalA;
+				/*pa = (__m128*)(&p->m_acc[i].x);
 				*pa = _mm_add_ps(*pa, ga);
-				//*pa = 
-				//_mm_store_ps(&p->m_acc[i].x, pb);
-				//p->m_acc[i] += globalA;
+
+				pa = (__m128*)(&p->m_acc[i+1].x);
+				*pa = _mm_add_ps(*pa, ga);*/
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_acc[endId - 1] += globalA;
 			}
 
-			for (size_t i = 0; i < endId; ++i)
+			for (size_t i = 0; i < endId/2; ++i)
 			{
-				//p->m_vel[i] += localDT * p->m_acc[i];
-				pa = (__m128*)(&p->m_vel[i].x);
+				p->m_vel[i] += localDT * p->m_acc[i];
+				p->m_vel[i+1] += localDT * p->m_acc[i+1];
+				/*pa = (__m128*)(&p->m_vel[i].x);
 				pb = (__m128*)(&p->m_acc[i].x);
 				pc = _mm_mul_ps(*pb, ldt);
 				*pa = _mm_add_ps(*pa, pc);
-				//_mm_store_ps(&p->m_vel[i].x, *pb);
+
+				pa = (__m128*)(&p->m_vel[i+1].x);
+				pb = (__m128*)(&p->m_acc[i+1].x);
+				pc = _mm_mul_ps(*pb, ldt);
+				*pa = _mm_add_ps(*pa, pc);*/
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_vel[endId - 1] += localDT * p->m_acc[endId - 1];
 			}
 
-			for (size_t i = 0; i < endId; ++i)
+			for (size_t i = 0; i < endId/2; ++i)
 			{
-				//p->m_pos[i] += localDT * p->m_vel[i];
-				pa = (__m128*)(&p->m_pos[i].x);
+				p->m_pos[i] += localDT * p->m_vel[i];
+				p->m_pos[i+1] += localDT * p->m_vel[i+1];
+				/*pa = (__m128*)(&p->m_pos[i].x);
 				pb = (__m128*)(&p->m_vel[i].x);
 				pc = _mm_mul_ps(*pb, ldt);
 				*pa = _mm_add_ps(*pa, pc);
-				//_mm_store_ps(&p->m_pos[i].x, pb);
+				
+				pa = (__m128*)(&p->m_pos[i].x);
+				pb = (__m128*)(&p->m_vel[i].x);
+				pc = _mm_mul_ps(*pb, ldt);
+				*pa = _mm_add_ps(*pa, pc);*/
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_pos[endId - 1] += localDT * p->m_vel[endId - 1];
 			}
 		}
 
@@ -58,14 +82,14 @@ namespace particles
 			{
 				if (p->m_pos[i].y < m_floorY)
 				{
-					glm::vec4 force = p->m_acc[i];
-					float normalFactor = glm::dot(force, glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+					glm::simdVec4 force = p->m_acc[i];
+					float normalFactor = glm::dot(force, glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
 					if (normalFactor < 0.0f)
-						force -= glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) * normalFactor;
+						force -= glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f) * normalFactor;
 
-					float velFactor = glm::dot(p->m_vel[i], glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+					float velFactor = glm::dot(p->m_vel[i], glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
 					//if (velFactor < 0.0)
-					p->m_vel[i] -= glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) * (1.0f + m_bounceFactor) * velFactor;
+					p->m_vel[i] -= glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f) * (1.0f + m_bounceFactor) * velFactor;
 
 					p->m_acc[i] = force;
 				}
@@ -79,7 +103,7 @@ namespace particles
 
 			const size_t endId = p->m_countAlive;
 			const size_t countAttractors = m_attractors.size();
-			glm::vec4 off;
+			glm::simdVec4 off;
 			float dist;
 			size_t a;
 			for (size_t i = 0; i < endId; ++i)
@@ -105,10 +129,13 @@ namespace particles
 
 			__m128 one = _mm_set_ps1(1.0f);
 
+			glm::simdVec4 t;
+
 			const size_t endId = p->m_countAlive;
 			for (size_t i = 0; i < endId; ++i)
 			{
-				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], p->m_time[i].z);
+				t = glm::simdVec4{ p->m_time[i].z, p->m_time[i].z, p->m_time[i].z, p->m_time[i].z };
+				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
 				//pa = _mm_set_ps1(p->m_time[i].z); // z
 				//pb = _mm_sub_ps(one, pa);         // 1-z
 				//_mm_store_ps(&p->m_col[i].x, pc); // c
@@ -131,10 +158,10 @@ namespace particles
 				scaler = (p->m_pos[i].x - m_minPos.x) / diffr;
 				scaleg = (p->m_pos[i].y - m_minPos.y) / diffg;
 				scaleb = (p->m_pos[i].z - m_minPos.z) / diffb;
-				p->m_col[i].r = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
-				p->m_col[i].g = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
-				p->m_col[i].b = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
-				p->m_col[i].a = glm::mix(p->m_startCol[i].a, p->m_endCol[i].a, p->m_time[i].z);
+				p->m_col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
+				p->m_col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
+				p->m_col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
+				p->m_col[i].w = glm::mix(p->m_startCol[i].w, p->m_endCol[i].w, p->m_time[i].z);
 			}
 		}
 
@@ -150,10 +177,10 @@ namespace particles
 				scaler = (p->m_vel[i].x - m_minVel.x) / diffr;
 				scaleg = (p->m_vel[i].y - m_minVel.y) / diffg;
 				scaleb = (p->m_vel[i].z - m_minVel.z) / diffb;
-				p->m_col[i].r = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
-				p->m_col[i].g = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
-				p->m_col[i].b = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
-				p->m_col[i].a = glm::mix(p->m_startCol[i].a, p->m_endCol[i].a, p->m_time[i].z);
+				p->m_col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
+				p->m_col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
+				p->m_col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
+				p->m_col[i].w = glm::mix(p->m_startCol[i].w, p->m_endCol[i].w, p->m_time[i].z);
 			}
 		}
 

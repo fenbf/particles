@@ -22,13 +22,13 @@ namespace particles
 
 		static_assert(sizeof(glm::vec4) == 4 * sizeof(float), "size is 16...");
 
-		m_pos      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_col      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_startCol = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_endCol   = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_vel      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_acc      = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
-		m_time     = (glm::vec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_pos = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_col = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_startCol = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_endCol = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_vel = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_acc = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
+		m_time = (glm::simdVec4 *)_aligned_malloc(sizeof(glm::vec4)*maxSize, 16);
 
 		m_alive.reset(new bool[maxSize]);
 	}
@@ -143,7 +143,7 @@ namespace particles
 
 		for (size_t i = 0; i < m_count; ++i)
 		{
-			m_particles.m_acc[i] = glm::vec4(0.0f);
+			m_particles.m_acc[i] = glm::simdVec4(0.0f);
 		}
 
 		for (auto & up : m_updaters)

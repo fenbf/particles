@@ -1,23 +1,26 @@
 #pragma once
 
-#define GLM_FORCE_AVX
+//#define GLM_FORCE_AVX
 
 #include <vector>
 #include <memory>
 #include <glm/vec4.hpp>
+
+#define GLM_SIMD_ENABLE_XYZW_UNION
+#include <glm/gtx/simd_vec4.hpp>
 
 namespace particles
 {
 	class ParticleData
 	{
 	public:
-		glm::vec4 *m_pos;
-		glm::vec4 *m_col;
-		glm::vec4 *m_startCol;
-		glm::vec4 *m_endCol;
-		glm::vec4 *m_vel;
-		glm::vec4 *m_acc;
-		glm::vec4 *m_time;
+		glm::simdVec4 *m_pos;
+		glm::simdVec4 *m_col;
+		glm::simdVec4 *m_startCol;
+		glm::simdVec4 *m_endCol;
+		glm::simdVec4 *m_vel;
+		glm::simdVec4 *m_acc;
+		glm::simdVec4 *m_time;
 		std::unique_ptr<bool[]>  m_alive;
 
 		size_t m_count{ 0 };

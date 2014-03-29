@@ -13,10 +13,10 @@ bool AttractorEffect::initialize(size_t numParticles)
 	// common
 	//
 	m_colGenerator = std::make_shared<particles::generators::BasicColorGen>();
-	m_colGenerator->m_minStartCol = glm::vec4{ 0.99, 0.99, 0.99, 1.0 };
-	m_colGenerator->m_maxStartCol = glm::vec4{ 0.99, 0.99, 1.0, 1.0 };
-	m_colGenerator->m_minEndCol = glm::vec4{ 0.99, 0.99, 0.99, 0.0 };
-	m_colGenerator->m_maxEndCol = glm::vec4{ 0.99, 0.99, 1.0, 0.25 };
+	m_colGenerator->m_minStartCol = glm::vec4{ 0.99f, 0.99f, 0.99f, 1.0f };
+	m_colGenerator->m_maxStartCol = glm::vec4{ 0.99f, 0.99f, 1.0f, 1.0f };
+	m_colGenerator->m_minEndCol = glm::vec4{ 0.99f, 0.99f, 0.99f, 0.0f };
+	m_colGenerator->m_maxEndCol = glm::vec4{ 0.99f, 0.99f, 1.0f, 0.25f };
 
 	auto velGenerator = std::make_shared<particles::generators::SphereVelGen>();
 	velGenerator->m_minVel = 0.1f;
@@ -71,8 +71,8 @@ bool AttractorEffect::initialize(size_t numParticles)
 		particleEmitter3->m_emitRate = (float)NUM_PARTICLES*0.1f;
 
 		m_posGenerators[2] = std::make_shared<particles::generators::BoxPosGen>();
-		m_posGenerators[2]->m_pos = glm::vec4{ 0.0, 0.0, 0.25, 0.0 };
-		m_posGenerators[2]->m_maxStartPosOffset = glm::vec4{ 0.0, 0.0, 0.0, 0.0 };
+		m_posGenerators[2]->m_pos = glm::vec4{ 0.0f, 0.0f, 0.25f, 0.0f };
+		m_posGenerators[2]->m_maxStartPosOffset = glm::vec4{ 0.0f, 0.0f, 0.0f, 0.0f };
 		particleEmitter3->addGenerator(m_posGenerators[2]);
 
 		particleEmitter3->addGenerator(m_colGenerator);
