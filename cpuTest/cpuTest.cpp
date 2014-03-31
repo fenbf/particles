@@ -11,7 +11,7 @@ using namespace particles;
 
 int main()
 {
-	const std::vector<std::string> EFFECTS_NAME{ "tunnel" };// "attractors", "fountain" };
+	const std::vector<std::string> EFFECTS_NAME{ "tunnel" , "attractors", "fountain" };
 	const size_t START_NUM_PARTICLES{ 1000 };
 	const size_t END_NUM_PARTICLES{ 301000 };
 	const size_t PARTICLES_NUM_STEPS{ 30 };	

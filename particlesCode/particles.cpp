@@ -141,9 +141,14 @@ namespace particles
 			em->emit(dt, &m_particles);
 		}
 
-		for (size_t i = 0; i < m_count; ++i)
+		for (size_t i = 0; i < m_count; i+=2)
 		{
 			m_particles.m_acc[i] = glm::simdVec4(0.0f);
+			m_particles.m_acc[i+1] = glm::simdVec4(0.0f);
+		}
+		if (m_count % 2 != 0)
+		{
+			m_particles.m_acc[m_count-1] = glm::simdVec4(0.0f);
 		}
 
 		for (auto & up : m_updaters)

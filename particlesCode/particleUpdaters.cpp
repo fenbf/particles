@@ -19,7 +19,7 @@ namespace particles
 			__m128 ldt = _mm_set_ps1(localDT);
 
 			const unsigned int endId = p->m_countAlive;
-			for (size_t i = 0; i < endId/2; ++i)
+			for (size_t i = 0; i < endId; i+=2)
 			{
 				 p->m_acc[i] += globalA;
 				 p->m_acc[i+1] += globalA;
@@ -34,7 +34,7 @@ namespace particles
 				p->m_acc[endId - 1] += globalA;
 			}
 
-			for (size_t i = 0; i < endId/2; ++i)
+			for (size_t i = 0; i < endId; i+=2)
 			{
 				p->m_vel[i] += localDT * p->m_acc[i];
 				p->m_vel[i+1] += localDT * p->m_acc[i+1];
@@ -53,7 +53,7 @@ namespace particles
 				p->m_vel[endId - 1] += localDT * p->m_acc[endId - 1];
 			}
 
-			for (size_t i = 0; i < endId/2; ++i)
+			for (size_t i = 0; i < endId; i+=2)
 			{
 				p->m_pos[i] += localDT * p->m_vel[i];
 				p->m_pos[i+1] += localDT * p->m_vel[i+1];
@@ -78,16 +78,18 @@ namespace particles
 			const float localDT = (float)dt;
 
 			const size_t endId = p->m_countAlive;
+			glm::simdVec4 force;
+			float normalFactor, velFactor;
 			for (size_t i = 0; i < endId; ++i)
 			{
 				if (p->m_pos[i].y < m_floorY)
 				{
-					glm::simdVec4 force = p->m_acc[i];
-					float normalFactor = glm::dot(force, glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
+					force = p->m_acc[i];
+					normalFactor = glm::dot(force, glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
 					if (normalFactor < 0.0f)
 						force -= glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f) * normalFactor;
 
-					float velFactor = glm::dot(p->m_vel[i], glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
+					velFactor = glm::dot(p->m_vel[i], glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
 					//if (velFactor < 0.0)
 					p->m_vel[i] -= glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f) * (1.0f + m_bounceFactor) * velFactor;
 
@@ -106,13 +108,16 @@ namespace particles
 			glm::simdVec4 off;
 			float dist;
 			size_t a;
+
+			glm::simdVec4 attr[8];
+			for (size_t i = 0; i < countAttractors; ++i)
+				attr[i] = glm::simdVec4(m_attractors[i]);
+
 			for (size_t i = 0; i < endId; ++i)
 			{
 				for (a = 0; a < countAttractors; ++a)
 				{
-					off.x = m_attractors[a].x - p->m_pos[i].x;
-					off.y = m_attractors[a].y - p->m_pos[i].y;
-					off.z = m_attractors[a].z - p->m_pos[i].z;
+					off = attr[a] - p->m_pos[i];
 					dist = glm::dot(off, off);
 
 					//if (fabs(dist) > 0.00001)
@@ -134,7 +139,7 @@ namespace particles
 			const size_t endId = p->m_countAlive;
 			for (size_t i = 0; i < endId; ++i)
 			{
-				t = glm::simdVec4{ p->m_time[i].z, p->m_time[i].z, p->m_time[i].z, p->m_time[i].z };
+				t = glm::simdVec4{ p->m_time[i].z };
 				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
 				//pa = _mm_set_ps1(p->m_time[i].z); // z
 				//pb = _mm_sub_ps(one, pa);         // 1-z

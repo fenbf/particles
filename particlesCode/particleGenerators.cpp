@@ -15,38 +15,65 @@ namespace particles
 	{
 		void BoxPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
-			glm::vec4 posMin{ m_pos.x - m_maxStartPosOffset.x, m_pos.y - m_maxStartPosOffset.y, m_pos.z - m_maxStartPosOffset.z, 1.0 };
-			glm::vec4 posMax{ m_pos.x + m_maxStartPosOffset.x, m_pos.y + m_maxStartPosOffset.y, m_pos.z + m_maxStartPosOffset.z, 1.0 };
+			const glm::vec4 posMin{ m_pos.x - m_maxStartPosOffset.x, m_pos.y - m_maxStartPosOffset.y, m_pos.z - m_maxStartPosOffset.z, 1.0 };
+			const glm::vec4 posMax{ m_pos.x + m_maxStartPosOffset.x, m_pos.y + m_maxStartPosOffset.y, m_pos.z + m_maxStartPosOffset.z, 1.0 };
 
-			for (size_t i = startId; i < endId; ++i)
+			for (size_t i = startId; i < endId; i+=2)
 			{
 				p->m_pos[i] = glm::simdVec4(glm::linearRand(posMin, posMax));
+				p->m_pos[i+1] = glm::simdVec4(glm::linearRand(posMin, posMax));
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_pos[endId-1] = glm::simdVec4(glm::linearRand(posMin, posMax));
 			}
 		}
 
 		void RoundPosGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
-			for (size_t i = startId; i < endId; ++i)
+			float ang;
+			for (size_t i = startId; i < endId; i+=2)
 			{
-				double ang = glm::linearRand(0.0, M_PI*2.0);
-				p->m_pos[i] = glm::simdVec4(m_center + glm::vec4(m_radX*sin(ang), m_radY*cos(ang), 0.0, 1.0));
+				ang = glm::linearRand(0.0f, M_PI*2.0f);
+				p->m_pos[i] = glm::simdVec4(m_center + glm::vec4(m_radX*sinf(ang), m_radY*cosf(ang), 0.0f, 1.0f));
+				
+				ang = glm::linearRand(0.0f, M_PI*2.0f);
+				p->m_pos[i+1] = glm::simdVec4(m_center + glm::vec4(m_radX*sinf(ang), m_radY*cosf(ang), 0.0f, 1.0f));
+			}
+			if (endId % 2 != 0)
+			{
+				ang = glm::linearRand(0.0f, M_PI*2.0f);
+				p->m_pos[endId-1] = glm::simdVec4(m_center + glm::vec4(m_radX*sinf(ang), m_radY*cosf(ang), 0.0f, 1.0f));
 			}
 		}
 
 		void BasicColorGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
-			for (size_t i = startId; i < endId; ++i)
+			for (size_t i = startId; i < endId; i+=2)
 			{
 				p->m_startCol[i] = glm::simdVec4(glm::linearRand(m_minStartCol, m_maxStartCol));
 				p->m_endCol[i] = glm::simdVec4(glm::linearRand(m_minEndCol, m_maxEndCol));
+
+				p->m_startCol[i+1] = glm::simdVec4(glm::linearRand(m_minStartCol, m_maxStartCol));
+				p->m_endCol[i+1] = glm::simdVec4(glm::linearRand(m_minEndCol, m_maxEndCol));
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_startCol[endId - 1] = glm::simdVec4(glm::linearRand(m_minStartCol, m_maxStartCol));
+				p->m_endCol[endId - 1] = glm::simdVec4(glm::linearRand(m_minEndCol, m_maxEndCol));
 			}
 		}
 
 		void BasicVelGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
-			for (size_t i = startId; i < endId; ++i)
+			for (size_t i = startId; i < endId; i+=2)
 			{
 				p->m_vel[i] = glm::simdVec4(glm::linearRand(m_minStartVel, m_maxStartVel));
+				p->m_vel[i + 1] = glm::simdVec4(glm::linearRand(m_minStartVel, m_maxStartVel));
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_vel[endId - 1] = glm::simdVec4(glm::linearRand(m_minStartVel, m_maxStartVel));
 			}
 		}
 
@@ -80,11 +107,21 @@ namespace particles
 
 		void BasicTimeGen::generate(double dt, ParticleData *p, size_t startId, size_t endId)
 		{
-			for (size_t i = startId; i < endId; ++i)
+			for (size_t i = startId; i < endId; i+=2)
 			{
 				p->m_time[i].x = p->m_time[i].y = glm::linearRand(m_minTime, m_maxTime);
 				p->m_time[i].z = (float)0.0;
 				p->m_time[i].w = (float)1.0 / p->m_time[i].x;
+
+				p->m_time[i+1].x = p->m_time[i+1].y = glm::linearRand(m_minTime, m_maxTime);
+				p->m_time[i+1].z = (float)0.0;
+				p->m_time[i+1].w = (float)1.0 / p->m_time[i+1].x;
+			}
+			if (endId % 2 != 0)
+			{
+				p->m_time[endId - 1].x = p->m_time[endId-1].y = glm::linearRand(m_minTime, m_maxTime);
+				p->m_time[endId - 1].z = (float)0.0;
+				p->m_time[endId - 1].w = (float)1.0 / p->m_time[endId-1].x;
 			}
 		}
 	}
