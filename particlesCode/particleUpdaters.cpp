@@ -11,23 +11,20 @@ namespace particles
 	{
 		void EulerUpdater::update(double dt, ParticleData *p)
 		{
-			__declspec(align(16)) const glm::simdVec4 globalA{ (float)dt * m_globalAcceleration.x, (float)dt * m_globalAcceleration.y, (float)dt * m_globalAcceleration.z, 0.0f };
+			const glm::simdVec4 globalA{ (float)dt * m_globalAcceleration.x, (float)dt * m_globalAcceleration.y, (float)dt * m_globalAcceleration.z, 0.0f };
 			const float localDT = (float)dt;
 
-			__m128 ga = _mm_set_ps(dt * m_globalAcceleration.x, dt * m_globalAcceleration.y, dt * m_globalAcceleration.z, 0.0f);
-			__m128 *pa, *pb, pc;
-			__m128 ldt = _mm_set_ps1(localDT);
+			__m256 ga = _mm256_set_m128(globalA.Data, globalA.Data);
+			__m256 *pa, *pb, pc;
+			__m256 ldt = _mm256_set1_ps(localDT);
 
 			const unsigned int endId = p->m_countAlive;
 			for (size_t i = 0; i < endId; i+=2)
 			{
-				 p->m_acc[i] += globalA;
-				 p->m_acc[i+1] += globalA;
-				/*pa = (__m128*)(&p->m_acc[i].x);
-				*pa = _mm_add_ps(*pa, ga);
-
-				pa = (__m128*)(&p->m_acc[i+1].x);
-				*pa = _mm_add_ps(*pa, ga);*/
+				 /*p->m_acc[i] += globalA;
+				 p->m_acc[i+1] += globalA;*/
+				pa = (__m256*)(&p->m_acc[i].x);
+				*pa = _mm256_add_ps(*pa, ga);
 			}
 			if (endId % 2 != 0)
 			{
@@ -36,17 +33,13 @@ namespace particles
 
 			for (size_t i = 0; i < endId; i+=2)
 			{
-				p->m_vel[i] += localDT * p->m_acc[i];
-				p->m_vel[i+1] += localDT * p->m_acc[i+1];
-				/*pa = (__m128*)(&p->m_vel[i].x);
-				pb = (__m128*)(&p->m_acc[i].x);
-				pc = _mm_mul_ps(*pb, ldt);
-				*pa = _mm_add_ps(*pa, pc);
+				//p->m_vel[i] += localDT * p->m_acc[i];
+				//p->m_vel[i+1] += localDT * p->m_acc[i+1];
 
-				pa = (__m128*)(&p->m_vel[i+1].x);
-				pb = (__m128*)(&p->m_acc[i+1].x);
-				pc = _mm_mul_ps(*pb, ldt);
-				*pa = _mm_add_ps(*pa, pc);*/
+				pa = (__m256*)(&p->m_vel[i].x);
+				pb = (__m256*)(&p->m_acc[i].x);
+				pc = _mm256_mul_ps(*pb, ldt);
+				*pa = _mm256_add_ps(*pa, pc);
 			}
 			if (endId % 2 != 0)
 			{
@@ -55,17 +48,12 @@ namespace particles
 
 			for (size_t i = 0; i < endId; i+=2)
 			{
-				p->m_pos[i] += localDT * p->m_vel[i];
-				p->m_pos[i+1] += localDT * p->m_vel[i+1];
-				/*pa = (__m128*)(&p->m_pos[i].x);
-				pb = (__m128*)(&p->m_vel[i].x);
-				pc = _mm_mul_ps(*pb, ldt);
-				*pa = _mm_add_ps(*pa, pc);
-				
-				pa = (__m128*)(&p->m_pos[i].x);
-				pb = (__m128*)(&p->m_vel[i].x);
-				pc = _mm_mul_ps(*pb, ldt);
-				*pa = _mm_add_ps(*pa, pc);*/
+				//p->m_pos[i] += localDT * p->m_vel[i];
+				//p->m_pos[i+1] += localDT * p->m_vel[i+1];
+				pa = (__m256*)(&p->m_pos[i].x);
+				pb = (__m256*)(&p->m_vel[i].x);
+				pc = _mm256_mul_ps(*pb, ldt);
+				*pa = _mm256_add_ps(*pa, pc);
 			}
 			if (endId % 2 != 0)
 			{
@@ -119,10 +107,7 @@ namespace particles
 				{
 					off = attr[a] - p->m_pos[i];
 					dist = glm::dot(off, off);
-
-					//if (fabs(dist) > 0.00001)
 					dist = m_attractors[a].w / dist;
-
 					p->m_acc[i] += off * dist;
 				}
 			}
@@ -137,10 +122,14 @@ namespace particles
 			glm::simdVec4 t;
 
 			const size_t endId = p->m_countAlive;
-			for (size_t i = 0; i < endId; ++i)
+			for (size_t i = 0; i < endId; i+=2)
 			{
 				t = glm::simdVec4{ p->m_time[i].z };
 				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
+
+				t = glm::simdVec4{ p->m_time[i].z };
+				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
+
 				//pa = _mm_set_ps1(p->m_time[i].z); // z
 				//pb = _mm_sub_ps(one, pa);         // 1-z
 				//_mm_store_ps(&p->m_col[i].x, pc); // c
@@ -148,6 +137,12 @@ namespace particles
 				//pe = _mm_mul_ps(pa, pc);          // c*z
 				//pa = _mm_add_ps(pd, pe);          // sum
 				//_mm_store_ps(&p->m_col[i].x, pa);
+			}
+
+			if (endId % 2 != 0)
+			{
+				t = glm::simdVec4{ p->m_time[endId-1].z };
+				p->m_col[endId-1] = glm::mix(p->m_startCol[endId - 1], p->m_endCol[endId - 1], t);
 			}
 		}
 
@@ -196,13 +191,25 @@ namespace particles
 
 			if (endId == 0) return;
 
-			for (size_t i = 0; i < endId; ++i)
+			for (size_t i = 0; i < endId; i+=2)
 			{
 				p->m_time[i].x -= localDT;
 				// interpolation: from 0 (start of life) till 1 (end of life)
-				p->m_time[i].z = (float)1.0 - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time		
+				p->m_time[i].z = 1.0f - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time	
 
-				if (p->m_time[i].x < (float)0.0)
+				p->m_time[i+1].x -= localDT;
+				p->m_time[i+1].z = 1.0f - (p->m_time[i+1].x*p->m_time[i+1].w); // .w is 1.0/max life time	
+			}
+
+			if (endId % 2 != 0)
+			{
+				p->m_time[endId-1].x -= localDT;
+				p->m_time[endId - 1].z = 1.0f - (p->m_time[endId - 1].x*p->m_time[endId - 1].w); // .w is 1.0/max life time
+			}
+
+			for (size_t i = 0; i < endId; ++i)
+			{	
+				if (p->m_time[i].x < 0.0f)
 				{
 					p->kill(i);
 					endId = p->m_countAlive < p->m_count ? p->m_countAlive : p->m_count;
