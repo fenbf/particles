@@ -19,19 +19,22 @@ namespace particles
 			__m256 ldt = _mm256_set1_ps(localDT);
 
 			const unsigned int endId = p->m_countAlive;
-			for (size_t i = 0; i < endId; i+=2)
+			size_t i;
+			for (i = 0; i < endId; i+=2)
 			{
 				 /*p->m_acc[i] += globalA;
 				 p->m_acc[i+1] += globalA;*/
 				pa = (__m256*)(&p->m_acc[i].x);
 				*pa = _mm256_add_ps(*pa, ga);
+				/*pa = (__m256*)(&p->m_acc[i+2].x);
+				*pa = _mm256_add_ps(*pa, ga);*/
 			}
-			if (endId % 2 != 0)
+			for (; i < endId; i++)
 			{
-				p->m_acc[endId - 1] += globalA;
+				p->m_acc[i] += globalA;
 			}
 
-			for (size_t i = 0; i < endId; i+=2)
+			for (i = 0; i < endId; i += 2)
 			{
 				//p->m_vel[i] += localDT * p->m_acc[i];
 				//p->m_vel[i+1] += localDT * p->m_acc[i+1];
@@ -40,13 +43,18 @@ namespace particles
 				pb = (__m256*)(&p->m_acc[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
+
+				/*pa = (__m256*)(&p->m_vel[i+2].x);
+				pb = (__m256*)(&p->m_acc[i+2].x);
+				pc = _mm256_mul_ps(*pb, ldt);
+				*pa = _mm256_add_ps(*pa, pc);*/
 			}
-			if (endId % 2 != 0)
+			for (; i < endId; i++)
 			{
-				p->m_vel[endId - 1] += localDT * p->m_acc[endId - 1];
+				p->m_vel[i] += localDT * p->m_acc[i];
 			}
 
-			for (size_t i = 0; i < endId; i+=2)
+			for (size_t i = 0; i < endId; i += 2)
 			{
 				//p->m_pos[i] += localDT * p->m_vel[i];
 				//p->m_pos[i+1] += localDT * p->m_vel[i+1];
@@ -54,10 +62,15 @@ namespace particles
 				pb = (__m256*)(&p->m_vel[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
+
+				/*pa = (__m256*)(&p->m_pos[i+2].x);
+				pb = (__m256*)(&p->m_vel[i+2].x);
+				pc = _mm256_mul_ps(*pb, ldt);
+				*pa = _mm256_add_ps(*pa, pc);*/
 			}
-			if (endId % 2 != 0)
+			for (; i < endId; i++)
 			{
-				p->m_pos[endId - 1] += localDT * p->m_vel[endId - 1];
+				p->m_pos[i] += localDT * p->m_vel[i];
 			}
 		}
 
@@ -115,34 +128,27 @@ namespace particles
 
 		void BasicColorUpdater::update(double dt, ParticleData *p)
 		{
-			__m128 pa, pb, pc, pd, pe, pf, pg;
-
-			__m128 one = _mm_set_ps1(1.0f);
-
-			glm::simdVec4 t;
+			__m128 x, y;
+			__m128 t;
 
 			const size_t endId = p->m_countAlive;
-			for (size_t i = 0; i < endId; i+=2)
+			size_t i;
+			for (i = 0; i < endId; i+=2)
 			{
-				t = glm::simdVec4{ p->m_time[i].z };
-				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
+				t = _mm_set1_ps(p->m_time[i].z);
+				x = _mm_sub_ps(p->m_endCol[i].Data, p->m_startCol[i].Data);
+				y = _mm_mul_ps(t, x);
+				p->m_col[i].Data = _mm_add_ps(p->m_startCol[i].Data, y);
 
-				t = glm::simdVec4{ p->m_time[i].z };
-				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], t);
-
-				//pa = _mm_set_ps1(p->m_time[i].z); // z
-				//pb = _mm_sub_ps(one, pa);         // 1-z
-				//_mm_store_ps(&p->m_col[i].x, pc); // c
-				//pd = _mm_mul_ps(pb, pc);          // c*(1-z)
-				//pe = _mm_mul_ps(pa, pc);          // c*z
-				//pa = _mm_add_ps(pd, pe);          // sum
-				//_mm_store_ps(&p->m_col[i].x, pa);
+				t = _mm_set1_ps(p->m_time[i+1].z);
+				x = _mm_sub_ps(p->m_endCol[i+1].Data, p->m_startCol[i+1].Data);
+				y = _mm_mul_ps(t, x);
+				p->m_col[i+1].Data = _mm_add_ps(p->m_startCol[i+1].Data, y);
 			}
 
-			if (endId % 2 != 0)
+			for (; i < endId; ++i)
 			{
-				t = glm::simdVec4{ p->m_time[endId-1].z };
-				p->m_col[endId-1] = glm::mix(p->m_startCol[endId - 1], p->m_endCol[endId - 1], t);
+				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], glm::simdVec4{ p->m_time[i].z });
 			}
 		}
 

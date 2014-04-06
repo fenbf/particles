@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <Windows.h>
 
 #include "glm\glm.hpp"
@@ -20,10 +21,16 @@ int main()
 	const double DELTA_TIME{ 1.0 / 60.0 };	// 60 fps
 	const size_t FRAME_COUNT{ 200 };
 
+	// run the system so that it has some decent num of alive particles...
+
 	std::cout << "count\t";
 	for (const auto &n : EFFECTS_NAME)
 		std::cout << n.c_str() << "\t";
 	std::cout << std::endl;
+
+	std::map<std::string, double> aliveToAllRatios;
+	for (const auto &n : EFFECTS_NAME)
+		aliveToAllRatios[n] = 0.0;
 
 	for (size_t step = 0; step < PARTICLES_NUM_STEPS; ++step)
 	{
@@ -49,9 +56,14 @@ int main()
 			elapsedMicroseconds.QuadPart /= freq.QuadPart;
 
 			std::cout << elapsedMicroseconds.QuadPart << "\t";
+
+			aliveToAllRatios[n] += e->aliveToAllRatio();
 		}
 		std::cout << std::endl;
 	}	
+	for (const auto &n : EFFECTS_NAME)
+		std::cout << aliveToAllRatios[n] / PARTICLES_NUM_STEPS*100.0 << '\t';
+	std::cout << std::endl;
 
 	return 0;
 }

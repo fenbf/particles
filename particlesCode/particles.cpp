@@ -156,6 +156,9 @@ namespace particles
 			up->update(dt, &m_particles);
 		}
 
+		double ratio = (double)m_particles.m_countAlive / (double)m_count;
+		m_aliveToAllRatio = m_aliveToAllRatio*0.5 + ratio*0.5;
+
 		//ParticleData::copyOnlyAlive(&m_particles, &m_aliveParticles);
 	}
 

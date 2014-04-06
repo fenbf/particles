@@ -82,11 +82,12 @@ namespace particles
 		ParticleData m_particles;
 		ParticleData m_aliveParticles;
 
-		size_t m_count;
+		size_t m_count{ 0 };
 
 		std::vector<std::shared_ptr<ParticleEmitter>> m_emitters;
 		std::vector<std::shared_ptr<ParticleUpdater>> m_updaters;
 
+		double m_aliveToAllRatio{ 0.0 };
 	public:
 		explicit ParticleSystem(size_t maxCount);
 		virtual ~ParticleSystem() { }
@@ -104,6 +105,8 @@ namespace particles
 		void addUpdater(std::shared_ptr<ParticleUpdater> up) { m_updaters.push_back(up); }
 
 		ParticleData *finalData() { return &m_particles; }
+
+		double getAliveToAllRatio() const { return m_aliveToAllRatio; }
 
 		static size_t computeMemoryUsage(const ParticleSystem &p);
 	};

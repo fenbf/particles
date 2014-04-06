@@ -26,6 +26,7 @@ public:
 
 	virtual int numAllParticles() = 0;
 	virtual int numAliveParticles() = 0;
+	virtual double aliveToAllRatio() = 0;
 };
 
 class EffectFactory

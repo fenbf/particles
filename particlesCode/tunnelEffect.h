@@ -33,4 +33,5 @@ public:
 
 	int numAllParticles() override { return m_system->numAllParticles(); }
 	int numAliveParticles() override { return m_system->numAliveParticles(); }
+	double aliveToAllRatio() override { return m_system->getAliveToAllRatio(); }
 };

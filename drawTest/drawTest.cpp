@@ -26,6 +26,7 @@
 #include "TimeQuery.h"
 
 #include "effect.h"
+#include <iostream>
 
 using namespace std;
 
@@ -197,10 +198,11 @@ void updateScene(double deltaTime)
 
 	if (gSelectedEffect != gCurrentEffectID)
 	{
+		std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
 		gCurrentEffect->removeUI();
 		gCurrentEffectID = gSelectedEffect;
 		gCurrentEffect = gEffects[gCurrentEffectID].get();
-		gCurrentEffect->addUI();
+		gCurrentEffect->addUI();		
 	}
 
 	gCurrentEffect->update(deltaTime);
