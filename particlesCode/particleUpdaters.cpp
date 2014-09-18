@@ -5,6 +5,11 @@
 #include <glm/gtc/random.hpp>
 #include <xmmintrin.h>
 
+#define SSE_MODE_NONE 0
+#define SSE_MODE_SSE2 1
+#define SSE_MODE_AVX 2
+#define SSE_MODE SSE_MODE_SSE2
+
 namespace particles
 {
 	namespace updaters
@@ -13,21 +18,53 @@ namespace particles
 		{
 			const glm::simdVec4 globalA{ (float)dt * m_globalAcceleration.x, (float)dt * m_globalAcceleration.y, (float)dt * m_globalAcceleration.z, 0.0f };
 			const float localDT = (float)dt;
+            const unsigned int endId = p->m_countAlive;
 
+#if SSE_MODE == SSE_MODE_NONE
+            for (size_t i = 0; i < endId; ++i)
+                p->m_acc[i] += globalA;
+
+            for (size_t i = 0; i < endId; ++i)
+                p->m_vel[i] += localDT * p->m_acc[i];
+
+            for (size_t i = 0; i < endId; ++i)
+                p->m_pos[i] += localDT * p->m_vel[i];
+#elif SSE_MODE == SSE_MODE_SSE2
+            __m128 ga = globalA.Data;
+            __m128 *pa, *pb, pc;
+            __m128 ldt = _mm_set_ps1(localDT);
+            
+            size_t i;
+            for (i = 0; i < endId; i++)
+            {
+                pa = (__m128*)(&p->m_acc[i].x);
+                *pa = _mm_add_ps(*pa, ga);
+            }
+
+            for (i = 0; i < endId; i ++)
+            {
+                pa = (__m128*)(&p->m_vel[i].x);
+                pb = (__m128*)(&p->m_acc[i].x);
+                pc = _mm_mul_ps(*pb, ldt);
+                *pa = _mm_add_ps(*pa, pc);
+            }
+
+            for (size_t i = 0; i < endId; i++)
+            {
+                pa = (__m128*)(&p->m_pos[i].x);
+                pb = (__m128*)(&p->m_vel[i].x);
+                pc = _mm_mul_ps(*pb, ldt);
+                *pa = _mm_add_ps(*pa, pc);
+            }
+#elif SSE_MODE == SSE_MODE_AVX
 			__m256 ga = _mm256_set_m128(globalA.Data, globalA.Data);
 			__m256 *pa, *pb, pc;
 			__m256 ldt = _mm256_set1_ps(localDT);
-
-			const unsigned int endId = p->m_countAlive;
 			size_t i;
 			for (i = 0; i < endId; i+=2)
 			{
-				 /*p->m_acc[i] += globalA;
-				 p->m_acc[i+1] += globalA;*/
 				pa = (__m256*)(&p->m_acc[i].x);
 				*pa = _mm256_add_ps(*pa, ga);
-				/*pa = (__m256*)(&p->m_acc[i+2].x);
-				*pa = _mm256_add_ps(*pa, ga);*/
 			}
 			for (; i < endId; i++)
 			{
@@ -36,18 +73,10 @@ namespace particles
 
 			for (i = 0; i < endId; i += 2)
 			{
-				//p->m_vel[i] += localDT * p->m_acc[i];
-				//p->m_vel[i+1] += localDT * p->m_acc[i+1];
-
 				pa = (__m256*)(&p->m_vel[i].x);
 				pb = (__m256*)(&p->m_acc[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
-
-				/*pa = (__m256*)(&p->m_vel[i+2].x);
-				pb = (__m256*)(&p->m_acc[i+2].x);
-				pc = _mm256_mul_ps(*pb, ldt);
-				*pa = _mm256_add_ps(*pa, pc);*/
 			}
 			for (; i < endId; i++)
 			{
@@ -56,22 +85,16 @@ namespace particles
 
 			for (size_t i = 0; i < endId; i += 2)
 			{
-				//p->m_pos[i] += localDT * p->m_vel[i];
-				//p->m_pos[i+1] += localDT * p->m_vel[i+1];
 				pa = (__m256*)(&p->m_pos[i].x);
 				pb = (__m256*)(&p->m_vel[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
-
-				/*pa = (__m256*)(&p->m_pos[i+2].x);
-				pb = (__m256*)(&p->m_vel[i+2].x);
-				pc = _mm256_mul_ps(*pb, ldt);
-				*pa = _mm256_add_ps(*pa, pc);*/
 			}
 			for (; i < endId; i++)
 			{
 				p->m_pos[i] += localDT * p->m_vel[i];
 			}
+#endif // AVX
 		}
 
 		void FloorUpdater::update(double dt, ParticleData *p)
@@ -128,28 +151,44 @@ namespace particles
 
 		void BasicColorUpdater::update(double dt, ParticleData *p)
 		{
+			const size_t endId = p->m_countAlive;
+
+#if SSE_MODE == SSE_MODE_NONE
+			for (size_t i = 0; i < endId; ++i)
+				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], glm::simdVec4(p->m_time[i].z));
+#elif SSE_MODE == SSE_MODE_SSE2 || SSE_MODE == SSE_MODE_AVX
 			__m128 x, y;
 			__m128 t;
 
-			const size_t endId = p->m_countAlive;
-			size_t i;
-			for (i = 0; i < endId; i+=2)
+			for (size_t i = 0; i < endId; i ++)
 			{
 				t = _mm_set1_ps(p->m_time[i].z);
 				x = _mm_sub_ps(p->m_endCol[i].Data, p->m_startCol[i].Data);
 				y = _mm_mul_ps(t, x);
 				p->m_col[i].Data = _mm_add_ps(p->m_startCol[i].Data, y);
-
-				t = _mm_set1_ps(p->m_time[i+1].z);
-				x = _mm_sub_ps(p->m_endCol[i+1].Data, p->m_startCol[i+1].Data);
-				y = _mm_mul_ps(t, x);
-				p->m_col[i+1].Data = _mm_add_ps(p->m_startCol[i+1].Data, y);
 			}
-
-			for (; i < endId; ++i)
-			{
-				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], glm::simdVec4{ p->m_time[i].z });
-			}
+//#elif SSE_MODE == SSE_MODE_AVX
+//			__m256 x, y, cs, ce, z;
+//			__m256 t;
+//
+//			size_t i;
+//			for (i = 0; i < endId; i += 2)
+//			{
+//				t = _mm256_set_m128(_mm_set1_ps(p->m_time[i].z), _mm_set1_ps(p->m_time[i+1].z));
+//				cs = _mm256_loadu2_m128(&p->m_startCol[i].x, &p->m_startCol[i + 1].x);
+//				ce = _mm256_loadu2_m128(&p->m_endCol[i].x, &p->m_endCol[i + 1].x);
+//				x = _mm256_sub_ps(ce, cs);
+//				y = _mm256_mul_ps(t, x);
+//				z = _mm256_add_ps(cs, y);
+//				p->m_col[i].Data = _mm_load_ps(z.m256_f32);
+//				p->m_col[i + 1].Data = _mm_load_ps(z.m256_f32+4);
+//			}
+//
+//			for (; i < endId; ++i)
+//			{
+//				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], glm::simdVec4{ p->m_time[i].z });
+//			}
+#endif			
 		}
 
 		void PosColorUpdater::update(double dt, ParticleData *p)
@@ -174,6 +213,9 @@ namespace particles
 		void VelColorUpdater::update(double dt, ParticleData *p)
 		{
 			const size_t endId = p->m_countAlive;
+
+			// no sse version, did not performed better
+
 			float scaler, scaleg, scaleb;
 			float diffr = m_maxVel.x - m_minVel.x;
 			float diffg = m_maxVel.y - m_minVel.y;
