@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include "commonMath.h"
 #include "particles.h"
 
 namespace particles

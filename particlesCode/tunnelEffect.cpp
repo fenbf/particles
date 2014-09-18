@@ -1,6 +1,7 @@
 #include "tunnelEffect.h"
 #include "main.h"
 #include "UIWrapper.h"
+#include <cmath>
 
 bool TunnelEffect::initialize(size_t numParticles)
 {
@@ -92,10 +93,10 @@ void TunnelEffect::update(double dt)
 	static double time = 0.0;
 	time += dt;
 
-	m_posGenerator->m_center.x = 0.1f*sinf((float)time*2.5f);
-	m_posGenerator->m_center.y = 0.1f*cosf((float)time*2.5f);
-	m_posGenerator->m_radX = 0.15f + 0.05f*sinf((float)time);
-	m_posGenerator->m_radY = 0.15f + 0.05f*sinf((float)time)*cosf((float)time*0.5f);
+	m_posGenerator->m_center.x = 0.1f*sin((float)time*2.5f);
+	m_posGenerator->m_center.y = 0.1f*cos((float)time*2.5f);
+	m_posGenerator->m_radX = 0.15f + 0.05f*sin((float)time);
+	m_posGenerator->m_radY = 0.15f + 0.05f*sin((float)time)*cosf((float)time*0.5f);
 }
 
 void TunnelEffect::cpuUpdate(double dt)

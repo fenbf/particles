@@ -1,6 +1,7 @@
 #include "fountainEffect.h"
 #include "main.h"
 #include "UIWrapper.h"
+#include <cmath>
 
 bool FountainEffect::initialize(size_t numParticles)
 {
@@ -96,8 +97,8 @@ void FountainEffect::update(double dt)
 	static double time = 0.0;
 	time += dt;
 
-	m_posGenerator->m_pos.x = 0.1f*sinf((float)time*2.5f);
-	m_posGenerator->m_pos.z = 0.1f*cosf((float)time*2.5f);
+	m_posGenerator->m_pos.x = 0.1f*sin((float)time*2.5f);
+	m_posGenerator->m_pos.z = 0.1f*cos((float)time*2.5f);
 }
 
 void FountainEffect::cpuUpdate(double dt)

@@ -1,5 +1,6 @@
 #include "attractorEffect.h"
 #include "UIWrapper.h"
+#include <cmath>
 
 bool AttractorEffect::initialize(size_t numParticles)
 {
