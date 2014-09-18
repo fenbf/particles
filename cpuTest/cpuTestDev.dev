@@ -10,7 +10,7 @@ PrivateResource=
 ResourceIncludes=
 MakeIncludes=
 Compiler=
-CppCompiler=-ffast-math_@@_-funroll-loops_@@_-Ofast_@@_
+CppCompiler=_@@_-ffast-math_@@_
 Linker=
 IsCpp=1
 Icon=
@@ -28,8 +28,8 @@ Folders=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=00010jcac0000000000000000
-UnitCount=20
+CompilerSettings=00010jc1c0000000000000000
+UnitCount=19
 
 [VersionInfo]
 Major=1
@@ -90,27 +90,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit5]
-FileName=..\particlesCode\commonMath.h
-CompileCpp=1
-Folder=cpuTestDev
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit6]
-FileName=..\particlesCode\effect.cpp
-CompileCpp=1
-Folder=cpuTestDev
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit7]
 FileName=..\particlesCode\effect.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -120,7 +100,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit8]
+[Unit7]
 FileName=..\particlesCode\fountainEffect.cpp
 CompileCpp=1
 Folder=cpuTestDev
@@ -130,7 +110,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit8]
 FileName=..\particlesCode\fountainEffect.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -140,7 +120,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit9]
 FileName=..\particlesCode\glParticleRenderer.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -150,7 +130,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit10]
 FileName=..\particlesCode\particleGenerators.cpp
 CompileCpp=1
 Folder=cpuTestDev
@@ -160,7 +140,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit11]
 FileName=..\particlesCode\particleGenerators.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -170,7 +150,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit12]
 FileName=..\particlesCode\particleRenderer.cpp
 CompileCpp=1
 Folder=cpuTestDev
@@ -180,7 +160,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit13]
 FileName=..\particlesCode\particleRenderer.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -190,7 +170,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit14]
 FileName=..\particlesCode\particles.cpp
 CompileCpp=1
 Folder=cpuTestDev
@@ -200,7 +180,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit15]
 FileName=..\particlesCode\particles.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -210,7 +190,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit16]
 FileName=..\particlesCode\particleUpdaters.cpp
 CompileCpp=1
 Folder=cpuTestDev
@@ -220,7 +200,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit17]
 FileName=..\particlesCode\particleUpdaters.h
 CompileCpp=1
 Folder=cpuTestDev
@@ -230,8 +210,18 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit18]
 FileName=..\particlesCode\tunnelEffect.cpp
+CompileCpp=1
+Folder=cpuTestDev
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit19]
+FileName=..\particlesCode\tunnelEffect.h
 CompileCpp=1
 Folder=cpuTestDev
 Compile=1
@@ -242,6 +232,16 @@ BuildCmd=
 
 [Unit20]
 FileName=..\particlesCode\tunnelEffect.h
+CompileCpp=1
+Folder=cpuTestDev
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=..\particlesCode\effect.cpp
 CompileCpp=1
 Folder=cpuTestDev
 Compile=1
