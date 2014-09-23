@@ -49,9 +49,9 @@ int main()
 
 	CpuTimeQuery timer;
 
-	std::cout << "count\t";
+	std::cout << "count | ";
 	for (const auto &n : EFFECTS_NAME)
-		std::cout << n.c_str() << "|\t";
+		std::cout << n.c_str() << " | ";
 	std::cout << std::endl;
 	std::cout << "-------|----------" << std::endl;
 

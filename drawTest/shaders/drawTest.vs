@@ -10,7 +10,7 @@ out vec4 outColor;
 
 void main() 
 {
-    vec4 eyePos = matModelview * gl_Vertex;
+    vec4 eyePos = matModelview * vVertex;
     gl_Position = matProjection * eyePos;
 
 	outColor = vColor;
