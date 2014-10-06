@@ -8,7 +8,10 @@
 #define SSE_MODE_NONE 0
 #define SSE_MODE_SSE2 1
 #define SSE_MODE_AVX 2
-#define SSE_MODE SSE_MODE_SSE2
+#define SSE_MODE SSE_MODE_NONE
+
+#define RESTRICT __restrict
+//#define RESTRICT
 
 namespace particles
 {
@@ -20,15 +23,19 @@ namespace particles
 			const float localDT = (float)dt;
             const unsigned int endId = p->m_countAlive;
 
+            glm::simdVec4 * RESTRICT acc = p->m_acc;
+            glm::simdVec4 * RESTRICT vel = p->m_vel;
+            glm::simdVec4 * RESTRICT pos = p->m_pos;
+
 #if SSE_MODE == SSE_MODE_NONE
             for (size_t i = 0; i < endId; ++i)
-                p->m_acc[i] += globalA;
+                acc[i] += globalA;
 
             for (size_t i = 0; i < endId; ++i)
-                p->m_vel[i] += localDT * p->m_acc[i];
+                vel[i] += localDT * acc[i];
 
             for (size_t i = 0; i < endId; ++i)
-                p->m_pos[i] += localDT * p->m_vel[i];
+                pos[i] += localDT * vel[i];
 #elif SSE_MODE == SSE_MODE_SSE2
             __m128 ga = globalA.Data;
             __m128 *pa, *pb, pc;
@@ -37,22 +44,22 @@ namespace particles
             size_t i;
             for (i = 0; i < endId; i++)
             {
-                pa = (__m128*)(&p->m_acc[i].x);
+                pa = (__m128*)(&acc[i].x);
                 *pa = _mm_add_ps(*pa, ga);
             }
 
             for (i = 0; i < endId; i ++)
             {
-                pa = (__m128*)(&p->m_vel[i].x);
-                pb = (__m128*)(&p->m_acc[i].x);
+                pa = (__m128*)(&vel[i].x);
+                pb = (__m128*)(&acc[i].x);
                 pc = _mm_mul_ps(*pb, ldt);
                 *pa = _mm_add_ps(*pa, pc);
             }
 
             for (size_t i = 0; i < endId; i++)
             {
-                pa = (__m128*)(&p->m_pos[i].x);
-                pb = (__m128*)(&p->m_vel[i].x);
+                pa = (__m128*)(&pos[i].x);
+                pb = (__m128*)(&vel[i].x);
                 pc = _mm_mul_ps(*pb, ldt);
                 *pa = _mm_add_ps(*pa, pc);
             }
@@ -63,36 +70,36 @@ namespace particles
 			size_t i;
 			for (i = 0; i < endId; i+=2)
 			{
-				pa = (__m256*)(&p->m_acc[i].x);
+				pa = (__m256*)(&acc[i].x);
 				*pa = _mm256_add_ps(*pa, ga);
 			}
 			for (; i < endId; i++)
 			{
-				p->m_acc[i] += globalA;
+				acc[i] += globalA;
 			}
 
 			for (i = 0; i < endId; i += 2)
 			{
-				pa = (__m256*)(&p->m_vel[i].x);
-				pb = (__m256*)(&p->m_acc[i].x);
+				pa = (__m256*)(&vel[i].x);
+				pb = (__m256*)(&acc[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
 			}
 			for (; i < endId; i++)
 			{
-				p->m_vel[i] += localDT * p->m_acc[i];
+				vel[i] += localDT * acc[i];
 			}
 
 			for (size_t i = 0; i < endId; i += 2)
 			{
-				pa = (__m256*)(&p->m_pos[i].x);
-				pb = (__m256*)(&p->m_vel[i].x);
+				pa = (__m256*)(&pos[i].x);
+				pb = (__m256*)(&vel[i].x);
 				pc = _mm256_mul_ps(*pb, ldt);
 				*pa = _mm256_add_ps(*pa, pc);
 			}
 			for (; i < endId; i++)
 			{
-				p->m_pos[i] += localDT * p->m_vel[i];
+				pos[i] += localDT * vel[i];
 			}
 #endif // AVX
 		}
@@ -110,7 +117,7 @@ namespace particles
 				{
 					force = p->m_acc[i];
 					normalFactor = glm::dot(force, glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
-					if (normalFactor < 0.0f)
+					//if (normalFactor < 0.0f)
 						force -= glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f) * normalFactor;
 
 					velFactor = glm::dot(p->m_vel[i], glm::simdVec4(0.0f, 1.0f, 0.0f, 0.0f));
@@ -123,28 +130,63 @@ namespace particles
 
 		}
 
+		inline float inverse(float x)
+		{
+			// re-interpret as a 32 bit integer
+			unsigned int *i = (unsigned int*)&x;
+
+			// adjust exponent
+			//*i = 0x7F000000 - *i;
+			*i = 0x7EEEEEEE - *i;
+			return x;
+		}
+
+		inline float inverse2(float f)
+		{
+			int x = *reinterpret_cast<int *>(&f);
+			x = 0x7EF311C2 - x;
+			float inv = *reinterpret_cast<float *>(&x);
+			//inv = inv * (2 - inv * f);
+			return inv;
+		}
+
 		void AttractorUpdater::update(double dt, ParticleData *p)
 		{
-			const float localDT = (float)dt;
-
-			const size_t endId = p->m_countAlive;
 			const size_t countAttractors = m_attractors.size();
-			glm::simdVec4 off;
-			float dist;
-			size_t a;
-
 			glm::simdVec4 attr[8];
 			for (size_t i = 0; i < countAttractors; ++i)
 				attr[i] = glm::simdVec4(m_attractors[i]);
 
+			const float localDT = (float)dt;
+
+			glm::simdVec4 * __restrict acc = p->m_acc;
+			glm::simdVec4 * __restrict vel = p->m_vel;
+			glm::simdVec4 * __restrict pos = p->m_pos;
+
+			const size_t endId = p->m_countAlive;
+			glm::simdVec4 off = glm::simdVec4(0.0f);
+#if SSE_MODE == SSE_MODE_NONE
+			float dist;
+#elif SSE_MODE == SSE_MODE_SSE2 || SSE_MODE == SSE_MODE_AVX
+			__m128 tempDist;
+#endif
+			
+			size_t a;
 			for (size_t i = 0; i < endId; ++i)
 			{
 				for (a = 0; a < countAttractors; ++a)
 				{
+#if SSE_MODE == SSE_MODE_NONE
 					off = attr[a] - p->m_pos[i];
-					dist = glm::dot(off, off);
-					dist = m_attractors[a].w / dist;
+					dist = off.x*off.x + off.y*off.y + off.z*off.z;
+					dist = attr[a].w / dist;// *inverse(dist);
 					p->m_acc[i] += off * dist;
+#elif SSE_MODE == SSE_MODE_SSE2 || SSE_MODE == SSE_MODE_AVX
+					off = attr[a] - p->m_pos[i];
+					tempDist = _mm_dp_ps(off.Data, off.Data, 0x71);
+					tempDist.m128_f32[0] = attr[a].w / tempDist.m128_f32[0];// *inverse2(fabs(tempDist.m128_f32[0]);
+					p->m_acc[i] += off * tempDist.m128_f32[0];
+#endif
 				}
 			}
 		}
@@ -153,19 +195,24 @@ namespace particles
 		{
 			const size_t endId = p->m_countAlive;
 
+            glm::simdVec4 * RESTRICT col = p->m_col;
+            glm::simdVec4 * RESTRICT startCol = p->m_startCol;
+            glm::simdVec4 * RESTRICT endCol = p->m_endCol;
+            glm::simdVec4 * RESTRICT ti = p->m_time;
+
 #if SSE_MODE == SSE_MODE_NONE
 			for (size_t i = 0; i < endId; ++i)
-				p->m_col[i] = glm::mix(p->m_startCol[i], p->m_endCol[i], glm::simdVec4(p->m_time[i].z));
+				col[i] = glm::mix(startCol[i], endCol[i], glm::simdVec4(ti[i].z));
 #elif SSE_MODE == SSE_MODE_SSE2 || SSE_MODE == SSE_MODE_AVX
 			__m128 x, y;
 			__m128 t;
 
 			for (size_t i = 0; i < endId; i ++)
 			{
-				t = _mm_set1_ps(p->m_time[i].z);
-				x = _mm_sub_ps(p->m_endCol[i].Data, p->m_startCol[i].Data);
+				t = _mm_set1_ps(ti[i].z);
+				x = _mm_sub_ps(endCol[i].Data, startCol[i].Data);
 				y = _mm_mul_ps(t, x);
-				p->m_col[i].Data = _mm_add_ps(p->m_startCol[i].Data, y);
+				col[i].Data = _mm_add_ps(startCol[i].Data, y);
 			}
 //#elif SSE_MODE == SSE_MODE_AVX
 //			__m256 x, y, cs, ce, z;
@@ -193,6 +240,12 @@ namespace particles
 
 		void PosColorUpdater::update(double dt, ParticleData *p)
 		{
+            glm::simdVec4 * RESTRICT col = p->m_col;
+            glm::simdVec4 * RESTRICT pos = p->m_pos;
+            glm::simdVec4 * RESTRICT startCol = p->m_startCol;
+            glm::simdVec4 * RESTRICT endCol = p->m_endCol;
+            glm::simdVec4 * RESTRICT t = p->m_time;
+
 			const size_t endId = p->m_countAlive;
 			float scaler, scaleg, scaleb;
 			float diffr = m_maxPos.x - m_minPos.x;
@@ -200,13 +253,13 @@ namespace particles
 			float diffb = m_maxPos.z - m_minPos.z;
 			for (size_t i = 0; i < endId; ++i)
 			{
-				scaler = (p->m_pos[i].x - m_minPos.x) / diffr;
-				scaleg = (p->m_pos[i].y - m_minPos.y) / diffg;
-				scaleb = (p->m_pos[i].z - m_minPos.z) / diffb;
-				p->m_col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
-				p->m_col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
-				p->m_col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
-				p->m_col[i].w = glm::mix(p->m_startCol[i].w, p->m_endCol[i].w, p->m_time[i].z);
+				scaler = (pos[i].x - m_minPos.x) / diffr;
+				scaleg = (pos[i].y - m_minPos.y) / diffg;
+				scaleb = (pos[i].z - m_minPos.z) / diffb;
+				col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
+				col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
+				col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
+				col[i].w = glm::mix(startCol[i].w, endCol[i].w, t[i].z);
 			}
 		}
 
@@ -216,19 +269,25 @@ namespace particles
 
 			// no sse version, did not performed better
 
+            glm::simdVec4 * RESTRICT col = p->m_col;
+            glm::simdVec4 * RESTRICT vel = p->m_vel;
+            glm::simdVec4 * RESTRICT startCol = p->m_startCol;
+            glm::simdVec4 * RESTRICT endCol = p->m_endCol;
+            glm::simdVec4 * RESTRICT t = p->m_time;
+
 			float scaler, scaleg, scaleb;
 			float diffr = m_maxVel.x - m_minVel.x;
 			float diffg = m_maxVel.y - m_minVel.y;
 			float diffb = m_maxVel.z - m_minVel.z;
 			for (size_t i = 0; i < endId; ++i)
 			{
-				scaler = (p->m_vel[i].x - m_minVel.x) / diffr;
-				scaleg = (p->m_vel[i].y - m_minVel.y) / diffg;
-				scaleb = (p->m_vel[i].z - m_minVel.z) / diffb;
-				p->m_col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
-				p->m_col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
-				p->m_col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
-				p->m_col[i].w = glm::mix(p->m_startCol[i].w, p->m_endCol[i].w, p->m_time[i].z);
+				scaler = (vel[i].x - m_minVel.x) / diffr;
+				scaleg = (vel[i].y - m_minVel.y) / diffg;
+				scaleb = (vel[i].z - m_minVel.z) / diffb;
+				col[i].x = scaler;// glm::mix(p->m_startCol[i].r, p->m_endCol[i].r, scaler);
+				col[i].y = scaleg;// glm::mix(p->m_startCol[i].g, p->m_endCol[i].g, scaleg);
+				col[i].z = scaleb;// glm::mix(p->m_startCol[i].b, p->m_endCol[i].b, scaleb);
+				col[i].w = glm::mix(startCol[i].w, endCol[i].w, t[i].z);
 			}
 		}
 
@@ -239,25 +298,27 @@ namespace particles
 
 			if (endId == 0) return;
 
+            glm::simdVec4 * RESTRICT t = p->m_time;
+
 			for (size_t i = 0; i < endId; i+=2)
 			{
-				p->m_time[i].x -= localDT;
+				t[i].x -= localDT;
 				// interpolation: from 0 (start of life) till 1 (end of life)
-				p->m_time[i].z = 1.0f - (p->m_time[i].x*p->m_time[i].w); // .w is 1.0/max life time	
+				t[i].z = 1.0f - (t[i].x*t[i].w); // .w is 1.0/max life time	
 
-				p->m_time[i+1].x -= localDT;
-				p->m_time[i+1].z = 1.0f - (p->m_time[i+1].x*p->m_time[i+1].w); // .w is 1.0/max life time	
+				t[i+1].x -= localDT;
+				t[i+1].z = 1.0f - (t[i+1].x*t[i+1].w); // .w is 1.0/max life time	
 			}
 
 			if (endId % 2 != 0)
 			{
-				p->m_time[endId-1].x -= localDT;
-				p->m_time[endId - 1].z = 1.0f - (p->m_time[endId - 1].x*p->m_time[endId - 1].w); // .w is 1.0/max life time
+				t[endId-1].x -= localDT;
+				t[endId - 1].z = 1.0f - (t[endId - 1].x*t[endId - 1].w); // .w is 1.0/max life time
 			}
 
 			for (size_t i = 0; i < endId; ++i)
 			{	
-				if (p->m_time[i].x < 0.0f)
+				if (t[i].x < 0.0f)
 				{
 					p->kill(i);
 					endId = p->m_countAlive < p->m_count ? p->m_countAlive : p->m_count;
