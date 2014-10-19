@@ -54,12 +54,14 @@ struct Camera
 	glm::mat4 projectionMatrix;
 } camera;
 
-CpuTimeQuery cpuParticlesUpdate;
-CpuTimeQuery cpuBuffersUpdate;
-GpuTimerQuery gpuUpdate;
-double gpuUpdateTime = 0;
-GpuTimerQuery gpuRender;
-double gpuRenderTime = 0;
+CpuTimeQuery cpuParticlesUpdate[3];
+CpuTimeQuery cpuBuffersUpdate[3];
+double cpuParticlesUpdateTime = 0.0;
+double cpuBuffersUpdateTime = 0.0;
+GpuTimerQuery gpuUpdate[3];
+GpuTimerQuery gpuRender[3];
+double gpuBuffersUpdateTime = 0.0;
+double gpuRenderTime = 0.0;
 
 bool gAnimationOn = true;
 
@@ -105,17 +107,21 @@ bool initApp()
 	gCurrentEffectID = 0;
 	gCurrentEffect = gEffects[0].get();
 
-	gpuUpdate.init();
-	gpuRender.init();
+	gpuUpdate[0].init();
+	gpuUpdate[1].init();
+	gpuUpdate[2].init();
+	gpuRender[0].init();
+	gpuRender[1].init();
+	gpuRender[2].init();
 
 	ui::AddTweak("animate", &gAnimationOn, "");
 	ui::AddVar("particles", &gNumParticles, "");
 	ui::AddVar("alive", &gNumAlive, "");
-	ui::AddVar("cpu particles", &cpuParticlesUpdate.m_time, "precision=3 group=timers");
-	ui::AddVar("cpu buffers", &cpuBuffersUpdate.m_time, "precision=3 group=timers");
+	ui::AddVar("cpu particles", &cpuParticlesUpdateTime, "precision=3 group=timers");
+	ui::AddVar("cpu buffers", &cpuBuffersUpdateTime, "precision=3 group=timers");
 
-	ui::AddVar("gpu buffer", &gpuUpdate.getTime(), "precision=3 group=timers");
-	ui::AddVar("gpu render", &gpuRender.getTime(), "precision=3 group=timers");		
+	ui::AddVar("gpu buffer", &gpuBuffersUpdateTime, "precision=3 group=timers");
+	ui::AddVar("gpu render", &gpuRenderTime, "precision=3 group=timers");		
 
 	ui::AddTweakDir3f("camera", &camera.cameraDir.x, "");
 	ui::AddTweak("camera distance", &camera.camDistance, "min=0.05 max=4.0 step=0.01");
@@ -129,6 +135,19 @@ bool initApp()
 ///////////////////////////////////////////////////////////////////////////////
 void cleanUp()
 {
+	const std::vector<std::string> EFFECTS_NAME{ "tunnel", "attractors", "fountain" };
+
+	// show average times:
+	for (int i = 0; i < 3; ++i)
+	{
+		std::cout << EFFECTS_NAME[i] << std::endl;
+		std::cout << "avg cpu update time: " << cpuParticlesUpdate[i].getAverage() << std::endl;
+		std::cout << "avg cpu buffer time: " << cpuBuffersUpdate[i].getAverage() << std::endl;
+
+		std::cout << "avg gpu update time: " << gpuUpdate[i].getAverageTime() << std::endl;
+		std::cout << "avg gpu render time: " << gpuRender[i].getAverageTime() << std::endl;
+	}
+
 	gCurrentEffect->clean();
 	glDeleteTextures(1, &gParticleTexture);
 }
@@ -207,17 +226,21 @@ void updateScene(double deltaTime)
 
 	gCurrentEffect->update(deltaTime);
 
-	cpuParticlesUpdate.begin();
+	cpuParticlesUpdate[gCurrentEffectID].begin();
 		gCurrentEffect->cpuUpdate(deltaTime);
 		gNumAlive = 0;// gParticleSystem->numAliveParticles();
-	cpuParticlesUpdate.end();
+	cpuParticlesUpdate[gCurrentEffectID].end();
 
-	cpuBuffersUpdate.begin();
-		gpuUpdate.begin();
+	cpuBuffersUpdate[gCurrentEffectID].begin();
+		gpuUpdate[gCurrentEffectID].begin();
 			gCurrentEffect->gpuUpdate(deltaTime);
-		gpuUpdate.end();		
-	cpuBuffersUpdate.end();
-	gpuUpdate.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+		gpuUpdate[gCurrentEffectID].end();
+	cpuBuffersUpdate[gCurrentEffectID].end();
+	gpuUpdate[gCurrentEffectID].updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+
+	cpuParticlesUpdateTime = cpuParticlesUpdate[gCurrentEffectID].m_time;
+	cpuBuffersUpdateTime = cpuBuffersUpdate[gCurrentEffectID].m_time;
+	gpuBuffersUpdateTime = gpuUpdate[gCurrentEffectID].getTime();
 
 	gNumParticles = gCurrentEffect->numAllParticles();
 	gNumAlive = gCurrentEffect->numAliveParticles();
@@ -246,13 +269,14 @@ void renderScene()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	gpuRender.begin();
+	gpuRender[gCurrentEffectID].begin();
 		gCurrentEffect->render();
-	gpuRender.end();
+	gpuRender[gCurrentEffectID].end();
 
 	glDisable(GL_BLEND);
 
     mProgram.disable();
 
-	gpuRender.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+	gpuRender[gCurrentEffectID].updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+	gpuRenderTime = gpuRender[gCurrentEffectID].getTime();
 }

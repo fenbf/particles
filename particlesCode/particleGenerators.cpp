@@ -15,7 +15,7 @@
 #define NO_RAND 0
 #define RAND_DEFAULT 1
 #define RAND_FAST 2
-#define RAND_MODE RAND_DEFAULT
+#define RAND_MODE RAND_FAST
 
 static int RandSeed = 1;
 

@@ -8,6 +8,8 @@
 #include <chrono>
 #include "gl_includes.h"
 
+#define __SKIP_FRAMES 10
+
 class CpuTimeQuery
 {
 public:
@@ -15,7 +17,8 @@ public:
 
 protected:
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_cpuTimePointStart;
-
+	double m_total{ 0.0 };
+	unsigned long m_frames{ 0 };
 public:
 	void begin()
 	{
@@ -27,7 +30,12 @@ public:
 		auto diff = std::chrono::high_resolution_clock::now() - m_cpuTimePointStart;
 		auto mili = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
 		m_time = 0.5*(m_time + (double)mili);
+		m_frames++;
+		if (m_frames > __SKIP_FRAMES)
+			m_total += m_time;
 	}
+
+	double getAverage() { return m_total / (double)(m_frames - __SKIP_FRAMES); }
 };
 
 /** simple wrapper for the GL_TIME_QUERY from OpenGL */
