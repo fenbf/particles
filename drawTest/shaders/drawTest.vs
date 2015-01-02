@@ -1,4 +1,4 @@
-#version 330
+#version 440
 
 uniform mat4x4 matModelview;
 uniform mat4x4 matProjection;
@@ -15,7 +15,7 @@ void main()
 
 	outColor = vColor;
 	
-	float dist = length(eyePos.xyz);
-	float att = inversesqrt(0.1f*dist);
-	gl_PointSize = 2.0f * att;
+	//float dist = length(eyePos.xyz);
+	//float att = inversesqrt(0.1f*dist);
+	//gl_PointSize = 2.0f * att;
 }

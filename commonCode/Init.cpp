@@ -16,31 +16,31 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
 	std::string srcName;
 	switch(source)
 	{
-		case GL_DEBUG_SOURCE_API_ARB: srcName = "API"; break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB: srcName = "Window System"; break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB: srcName = "Shader Compiler"; break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY_ARB: srcName = "Third Party"; break;
-		case GL_DEBUG_SOURCE_APPLICATION_ARB: srcName = "Application"; break;
-		case GL_DEBUG_SOURCE_OTHER_ARB: srcName = "Other"; break;
+		case GL_DEBUG_SOURCE_API: srcName = "API"; break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: srcName = "Window System"; break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER: srcName = "Shader Compiler"; break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY: srcName = "Third Party"; break;
+		case GL_DEBUG_SOURCE_APPLICATION: srcName = "Application"; break;
+		case GL_DEBUG_SOURCE_OTHER: srcName = "Other"; break;
 	}
 
 	std::string errorType;
 	switch(type)
 	{
-		case GL_DEBUG_TYPE_ERROR_ARB: errorType = "Error"; break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: errorType = "Deprecated Functionality"; break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: errorType = "Undefined Behavior"; break;
-		case GL_DEBUG_TYPE_PORTABILITY_ARB: errorType = "Portability"; break;
-		case GL_DEBUG_TYPE_PERFORMANCE_ARB: errorType = "Performance"; break;
-		case GL_DEBUG_TYPE_OTHER_ARB: errorType = "Other"; break;
+		case GL_DEBUG_TYPE_ERROR: errorType = "Error"; break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: errorType = "Deprecated Functionality"; break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: errorType = "Undefined Behavior"; break;
+		case GL_DEBUG_TYPE_PORTABILITY: errorType = "Portability"; break;
+		case GL_DEBUG_TYPE_PERFORMANCE: errorType = "Performance"; break;
+		case GL_DEBUG_TYPE_OTHER: errorType = "Other"; break;
 	}
 
 	std::string typeSeverity;
 	switch(severity)
 	{
-		case GL_DEBUG_SEVERITY_HIGH_ARB: typeSeverity = "High"; break;
-		case GL_DEBUG_SEVERITY_MEDIUM_ARB: typeSeverity = "Medium"; break;
-		case GL_DEBUG_SEVERITY_LOW_ARB: typeSeverity = "Low"; break;
+		case GL_DEBUG_SEVERITY_HIGH: typeSeverity = "High"; break;
+		case GL_DEBUG_SEVERITY_MEDIUM: typeSeverity = "Medium"; break;
+		case GL_DEBUG_SEVERITY_LOW: typeSeverity = "Low"; break;
 	}
 
 	LOG("%s from %s,\t%s priority\nMessage: %s\n",
@@ -51,35 +51,20 @@ namespace utils
 {
     bool initGL(bool vsync)
     {
-        int glLoadStatus = ogl_LoadFunctions();
-        if (glLoadStatus == ogl_LOAD_FAILED)
-        {
-            LOG_ERROR("Cannot load opengl 4.2");
-            return false;
-        }
-        else if (glLoadStatus > ogl_LOAD_SUCCEEDED)
-        {
-            LOG("OpenGL Loaded, but without %d extensions!", glLoadStatus - ogl_LOAD_SUCCEEDED);
+		GLenum err = glewInit();
+		if (GLEW_OK != err)
+		{
+			LOG("GLEW Loaded!");
         }
 
-        int wglLoadStatus = wgl_LoadFunctions(::wglGetCurrentDC());
-        if (wglLoadStatus == ogl_LOAD_FAILED)
-        {
-            LOG_ERROR("Cannot load WGL extensions");
-        }
-        else if (wglLoadStatus > wgl_LOAD_SUCCEEDED)
-        {
-            LOG("WGL Loaded, but without %d extensions!", wglLoadStatus - wgl_LOAD_SUCCEEDED);
-        }
-
-        if (ogl_ext_ARB_debug_output)
+        if (GLEW_ARB_debug_output)
 	    {
-    		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-	    	glDebugMessageCallbackARB((GLDEBUGPROCARB)DebugFunc, nullptr);
+    		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	    	glDebugMessageCallback((GLDEBUGPROCARB)DebugFunc, nullptr);
             LOG("Debug Message Callback turned on!");
         }
-        else
-            LOG("NO Debug Message Callback ;(");			
+       // else
+        //    LOG("NO Debug Message Callback ;(");			
 
         // print some GL info:
         int majorVersion = -1;
@@ -95,7 +80,7 @@ namespace utils
         LOG("- - - - - - - - - - - - - - - - - - - - - - - \n");
 
 #ifdef WIN32
-        if (wgl_ext_EXT_swap_control)
+        if (WGLEW_EXT_swap_control)
             wglSwapIntervalEXT(vsync ? 1 : 0);
 #endif
 

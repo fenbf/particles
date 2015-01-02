@@ -8,8 +8,10 @@
 struct Globals
 {
 	static std::string ApplicationWindowName;
-	static double AppTime;	// global app time in seconds
+	static double AppTimeInSec;	// global app time in seconds
 	static float Fps;
+	static unsigned long FrameID;
+	static bool ShowUI;
 
 	static unsigned int MainWindowWidth;
 	static unsigned int MainWindowHeight;

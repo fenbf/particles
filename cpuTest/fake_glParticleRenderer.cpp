@@ -3,12 +3,9 @@
 
 namespace particles
 {
-
-	void GLParticleRenderer::generate(ParticleSystem *sys, bool)
+	void GLParticleRenderer::generate(ParticleSystem *, bool)
 	{
-		assert(sys != nullptr);
 
-		m_system = sys;
 	}
 
 	void GLParticleRenderer::destroy()
@@ -22,6 +19,46 @@ namespace particles
 	}
 
 	void GLParticleRenderer::render()
+	{
+		
+	}
+
+	void GLParticleRendererUseMap::update()
+	{
+
+	}
+
+	void GLParticleRendererDoubleVao::generate(ParticleSystem *, bool)
+	{
+
+	}
+
+	void GLParticleRendererDoubleVao::destroy()
+	{
+
+	}
+
+	void GLParticleRendererDoubleVao::update()
+	{
+
+	}
+
+	void GLParticleRendererDoubleVao::render()
+	{
+
+	}
+
+	void GLParticleRendererPersistent::generate(ParticleSystem *, bool)
+	{
+
+	}
+
+	void GLParticleRendererPersistent::update()
+	{
+
+	}
+
+	void GLParticleRendererPersistent::render()
 	{
 		
 	}

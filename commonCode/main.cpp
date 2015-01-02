@@ -31,7 +31,7 @@
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
-bool initApp();
+bool initApp(int argc, char **argv);
 void cleanUp();
 
 // window:
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 
 #ifdef USE_ONLY_CORE_OPENGL_PROFILE
-	glutInitContextVersion(3, 3);
+	glutInitContextVersion(4, 4);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 #endif
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	//
 	// 'init' OpenGL: GLEW... and print some basic info
 	//
-	if (utils::initGL(true) == false) 
+	if (utils::initGL(/*vsync=*/false) == false) 
 		return 1;
 	
 #ifdef _EX_USE_ANTTWEAKBAR
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 	//
 	// init application and run main loop:
 	//
-    if (initApp())
+    if (initApp(argc, argv))
     {
 	    glutMainLoop();
     }
@@ -152,8 +152,11 @@ void mainProcessMouse(int button, int state, int x, int y)
 	processMouse(button, state, x, y);
 
 #ifdef _EX_USE_ANTTWEAKBAR
-	// send message to antTweakBar
-	TwEventMouseButtonGLUT(button, state, x, y);
+	if (Globals::ShowUI)
+	{
+		// send message to antTweakBar
+		TwEventMouseButtonGLUT(button, state, x, y);
+	}
 #endif
 }
 
@@ -163,8 +166,11 @@ void mainProcessMouseMotion(int x, int y)
 	processMouseMotion(x, y);
 	
 #ifdef _EX_USE_ANTTWEAKBAR
-	// send message to antTweakBar
-	TwEventMouseMotionGLUT(x, y);
+	if (Globals::ShowUI)
+	{
+		// send message to antTweakBar
+		TwEventMouseMotionGLUT(x, y);
+	}
 #endif
 }
 
@@ -174,8 +180,11 @@ void mainProcessMousePassiveMotion(int x, int y)
 	processMousePassiveMotion(x, y);
 	
 #ifdef _EX_USE_ANTTWEAKBAR
-	// send message to antTweakBar
-	TwEventMouseMotionGLUT(x, y);
+	if (Globals::ShowUI)
+	{
+		// send message to antTweakBar
+		TwEventMouseMotionGLUT(x, y);
+	}
 #endif
 }
 
@@ -187,7 +196,7 @@ void mainProcessMousePassiveMotion(int x, int y)
 void mainIdle()
 {
 	double deltaTime;
-    utils::updateTimer(&deltaTime, &Globals::AppTime);
+    utils::updateTimer(&deltaTime, &Globals::AppTimeInSec);
 	
     utils::calculateFps(&Globals::Fps);
 
@@ -198,7 +207,8 @@ void mainIdle()
 	renderScene();
 
 #ifdef _EX_USE_ANTTWEAKBAR
-	TwDraw();
+	if (Globals::ShowUI)
+		TwDraw();
 #endif
 
 	glutSwapBuffers();
@@ -211,6 +221,7 @@ void errIdle()
 #endif
 
 	glutSwapBuffers();
+	Globals::FrameID++;
 }
 
 #pragma endregion

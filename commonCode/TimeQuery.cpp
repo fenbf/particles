@@ -40,22 +40,30 @@ void GpuTimerQuery::init()
 void GpuTimerQuery::updateResults(WaitOption wait)
 {
     // query time results
-    int stopTimerAvailable = (wait == WaitOption::WaitForResults ? 0 : 1);
-    while (!stopTimerAvailable)
-    {
-        glGetQueryObjectiv(mQuery, GL_QUERY_RESULT_AVAILABLE, &stopTimerAvailable);
-    }
+	int stopTimerAvailable = 0;
+	if (wait == WaitOption::WaitForResults)
+	{
+		while (!stopTimerAvailable)
+		{
+			glGetQueryObjectiv(mQuery, GL_QUERY_RESULT_AVAILABLE, &stopTimerAvailable);
+		}
+	}
+	else
+		glGetQueryObjectiv(mQuery, GL_QUERY_RESULT_AVAILABLE, &stopTimerAvailable);
 
-    GLuint64 t;
-    glGetQueryObjectui64v(mQuery, GL_QUERY_RESULT, &t);
-    mWholeTime += t;
-    mCounter++;
+	if (stopTimerAvailable)
+	{
+		GLuint64 t;
+		glGetQueryObjectui64v(mQuery, GL_QUERY_RESULT, &t);
+		mWholeTime += t;
+		mCounter++;
 
-    double msec = (double)t/1000000.0;
-    mTime = 0.25*(msec + mTimes[0] + mTimes[1] + mTimes[2]);
-    mTimes[2] = mTimes[1];
-    mTimes[1] = mTimes[0];
-    mTimes[0] = msec;
+		double msec = (double)t / 1000000.0;
+		mTime = 0.25*(msec + mTimes[0] + mTimes[1] + mTimes[2]);
+		mTimes[2] = mTimes[1];
+		mTimes[1] = mTimes[0];
+		mTimes[0] = msec;
+	}
 }
 
 

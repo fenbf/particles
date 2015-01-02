@@ -1,10 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <map>
 
 namespace particles
 {
-
 	class ParticleSystem;
 
 	class IParticleRenderer
@@ -21,7 +21,13 @@ namespace particles
 
 	class RendererFactory
 	{
+	protected:
+		static std::unique_ptr<std::map<std::string, std::shared_ptr<IParticleRenderer>(*)()>> s_generatorMap;
+		static void initGeneratorMap();
 	public:
 		static std::shared_ptr<IParticleRenderer> create(const char *name);
+		static bool isAvailable(const char *name);
+	private:
+		RendererFactory();
 	};
 }

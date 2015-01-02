@@ -7,7 +7,7 @@ bool TunnelEffect::initialize(size_t numParticles)
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = numParticles == 0 ? 10000 : numParticles;
+	const size_t NUM_PARTICLES = numParticles == 0 ? 500000 : numParticles;
 	m_system = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
 
 	//
@@ -58,9 +58,12 @@ bool TunnelEffect::initialize(size_t numParticles)
 	return true;
 }
 
-bool TunnelEffect::initializeRenderer()
+bool TunnelEffect::initializeRenderer(const char *name)
 {
-	m_renderer = particles::RendererFactory::create("gl");
+	m_renderer = particles::RendererFactory::create(name);
+	if (!m_renderer)
+		return false;
+
 	m_renderer->generate(m_system.get(), false);
 
 	return true;

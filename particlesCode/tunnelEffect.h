@@ -20,7 +20,7 @@ public:
 	 ~TunnelEffect() { }
 
 	bool initialize(size_t numParticles) override;
-	bool initializeRenderer() override;
+	bool initializeRenderer(const char *name) override;
 	void reset() override { m_system->reset(); }
 	void clean() override;
 	void addUI() override;

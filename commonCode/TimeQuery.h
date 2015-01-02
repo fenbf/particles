@@ -9,6 +9,7 @@
 #include "gl_includes.h"
 
 #define __SKIP_FRAMES 10
+#define TIME_EPSILON 0.00001
 
 class CpuTimeQuery
 {
@@ -111,7 +112,7 @@ inline double GpuTimerQuery::getAverageTime() const
 {
     double avg = mWholeTime/(double)mCounter;
     avg /= 1000000.0;
-    return avg;
+    return avg < TIME_EPSILON ? 0.0 : avg;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

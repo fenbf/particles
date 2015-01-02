@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;GLEW_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -78,7 +78,7 @@
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;FREEGLUT_STATIC;GLEW_STATIC;_EX_USE_ANTTWEAKBAR;_EX_SHOW_CONSOLE;"_SECURE_SCL=0";"_HAS_ITERATOR_DEBUGGING=0";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\commonCode\;..\ext\;..\particlesCode\</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -107,7 +107,7 @@
     <ClCompile Include="..\commonCode\ShaderProgram.cpp" />
     <ClCompile Include="..\commonCode\TextureLoader.cpp" />
     <ClCompile Include="..\commonCode\TimeQuery.cpp" />
-    <ClCompile Include="..\ext\gl_core_3_3.c" />
+    <ClCompile Include="..\ext\glew.c" />
     <ClCompile Include="..\particlesCode\attractorEffect.cpp" />
     <ClCompile Include="..\particlesCode\effect.cpp" />
     <ClCompile Include="..\particlesCode\fountainEffect.cpp" />
@@ -118,7 +118,6 @@
     <ClCompile Include="..\particlesCode\particleUpdaters.cpp" />
     <ClCompile Include="..\particlesCode\tunnelEffect.cpp" />
     <ClCompile Include="drawTest.cpp" />
-    <ClCompile Include="..\ext\wgl_wgl.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\commonCode\commonCode.h" />

@@ -4,12 +4,16 @@
 	#include <AntTweakBar.h>
 #endif
 
-double Globals::AppTime = 0.0;	// global app time in seconds
+double Globals::AppTimeInSec = 0.0;	// global app time in seconds
 float Globals::Fps = 0.0f;
+unsigned long Globals::FrameID = 0;
 
 unsigned int Globals::MainWindowWidth = WND_START_WIDTH;
 unsigned int Globals::MainWindowHeight = WND_START_HEIGHT;
 
 #ifdef _EX_USE_ANTTWEAKBAR
-TwBar *Globals::MainTweakBar = NULL;
+	bool Globals::ShowUI = true;
+	TwBar *Globals::MainTweakBar = NULL;
+#else
+	bool Globals::ShowUI = false;
 #endif

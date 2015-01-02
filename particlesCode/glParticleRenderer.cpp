@@ -4,9 +4,70 @@
 #include <assert.h>
 #include "gl_includes.h"
 
+namespace
+{
+	void destroyBuffer(GLuint & buf)
+	{
+		if (buf != 0)
+		{
+			glDeleteBuffers(1, &buf);
+			buf = 0;
+		}
+	}
+
+	void genSingleBuffer(GLuint & buf, GLuint count, float ** mappedBuffer)
+	{
+		glGenBuffers(1, &buf);
+		glBindBuffer(GL_ARRAY_BUFFER, buf);
+
+		if (mappedBuffer && GLEW_ARB_buffer_storage)
+		{
+			const GLbitfield creationFlags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_DYNAMIC_STORAGE_BIT;
+			const GLbitfield mapFlags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+			const unsigned int BUFFERING_COUNT = 3;
+			const GLsizeiptr neededSize = sizeof(float) * 4 * count * BUFFERING_COUNT;
+
+			glBufferStorage(GL_ARRAY_BUFFER, neededSize, nullptr, creationFlags);
+			
+			*mappedBuffer = (float *)glMapBufferRange(GL_ARRAY_BUFFER, 0, neededSize, mapFlags);
+		}
+		else
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * count, nullptr, GL_STREAM_DRAW);
+	}
+
+	void setVertexAttrib(GLuint & bufPos, GLuint attribID, GLuint elements)
+	{
+		glEnableVertexAttribArray(attribID);
+
+		if (GLEW_ARB_vertex_attrib_binding)
+		{
+			glBindVertexBuffer(attribID, bufPos, 0, sizeof(float) * elements);
+			glVertexAttribFormat(attribID, elements, GL_FLOAT, GL_FALSE, 0);
+			glVertexAttribBinding(attribID, attribID);
+		}
+		else
+			glVertexAttribPointer(attribID, elements, GL_FLOAT, GL_FALSE, (elements)*sizeof(float), (void *)((0)*sizeof(float)));
+	}
+
+	void generateBuffers(GLuint &vao, GLuint &bufPos, GLuint &bufCol, GLuint count, float **mappedBuffer1, float **mappedBuffer2)
+	{
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		genSingleBuffer(bufPos, count, mappedBuffer1);
+		setVertexAttrib(bufPos, 0, 4);
+
+		genSingleBuffer(bufCol, count, mappedBuffer2);
+		setVertexAttrib(bufCol, 1, 4);
+
+		glBindVertexArray(0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+}
+
 namespace particles
 {
-
 	void GLParticleRenderer::generate(ParticleSystem *sys, bool)
 	{
 		assert(sys != nullptr);
@@ -15,65 +76,13 @@ namespace particles
 
 		const size_t count = sys->numAllParticles();
 
-		glGenVertexArrays(1, &m_vao);
-		glBindVertexArray(m_vao);
-
-		glGenBuffers(1, &m_bufPos);
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)* 4 * count, nullptr, GL_STREAM_DRAW);
-		glEnableVertexAttribArray(0);
-
-		if (ogl_ext_ARB_vertex_attrib_binding)
-		{
-			glBindVertexBuffer(0, m_bufPos, 0, sizeof(float)* 4);
-			glVertexAttribFormat(0, 4, GL_FLOAT, GL_FALSE, 0);
-			glVertexAttribBinding(0, 0);
-		}
-		else
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (4)*sizeof(float), (void *)((0)*sizeof(float)));
-		
-
-		glGenBuffers(1, &m_bufCol);
-		glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)* 4 * count, nullptr, GL_STREAM_DRAW);
-		glEnableVertexAttribArray(1);
-
-		if (ogl_ext_ARB_vertex_attrib_binding)
-		{
-			glBindVertexBuffer(1, m_bufCol, 0, sizeof(float)* 4);
-			glVertexAttribFormat(1, 4, GL_FLOAT, GL_FALSE, 0);
-			glVertexAttribBinding(1, 1);
-		}
-		else
-			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, (4)*sizeof(float), (void *)((0)*sizeof(float)));
-		
-
-		//glBindVertexBuffer(0, positionBufferHandle, 0, sizeof(GLfloat)* 3);
-		//glBindVertexBuffer(1, colorBufferHandle, 0, sizeof(GLfloat)* 3);
-
-		//glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);
-		//glVertexAttribBinding(0, 0);
-		//glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 0);
-		//glVertexAttribBinding(1, 1);
-
-		glBindVertexArray(0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		generateBuffers(m_vao, m_bufPos, m_bufCol, count, nullptr, nullptr);
 	}
 
 	void GLParticleRenderer::destroy()
 	{
-		if (m_bufPos != 0)
-		{
-			glDeleteBuffers(1, &m_bufPos);
-			m_bufPos = 0;
-		}
-
-		if (m_bufCol != 0)
-		{
-			glDeleteBuffers(1, &m_bufCol);
-			m_bufCol = 0;
-		}
+		destroyBuffer(m_bufPos);
+		destroyBuffer(m_bufCol);
 	}
 
 	void GLParticleRenderer::update()
@@ -84,13 +93,14 @@ namespace particles
 		const size_t count = m_system->numAliveParticles();
 		if (count > 0)
 		{
+			float *posPtr = (float *)(m_system->finalData()->m_pos);
+			float *colPtr = (float *)(m_system->finalData()->m_col);
+
 			glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
-			float *ptr = (float *)(m_system->finalData()->m_pos);// .get());
-			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, ptr);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, posPtr);
 
 			glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
-			ptr = (float*)(m_system->finalData()->m_col);// .get());
-			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, ptr);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float)* 4, colPtr);
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
@@ -99,43 +109,143 @@ namespace particles
 	void GLParticleRenderer::render()
 	{
 		glBindVertexArray(m_vao);
+		const size_t count = m_system->numAliveParticles();
+
+		if (count > 0)
+			glDrawArrays(GL_POINTS, 0, count);
+
+		glBindVertexArray(0);
+	}
+
+	void GLParticleRendererUseMap::update()
+	{
+		assert(m_system != nullptr);
+		assert(m_bufPos > 0 && m_bufCol > 0);
+
+		const size_t count = m_system->numAliveParticles();
+		if (count > 0)
+		{
+			float *posPtr = (float *)(m_system->finalData()->m_pos);
+			float *colPtr = (float *)(m_system->finalData()->m_col);
+
+			glBindBuffer(GL_ARRAY_BUFFER, m_bufPos);
+			//glInvalidateBufferData(GL_ARRAY_BUFFER);
+			float *mem = (float *)glMapBufferRange(GL_ARRAY_BUFFER, 0, count*sizeof(float) * 4, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_WRITE_BIT);
+			memcpy(mem, posPtr, count*sizeof(float) * 4);
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+
+			glBindBuffer(GL_ARRAY_BUFFER, m_bufCol);
+			//glInvalidateBufferData(GL_ARRAY_BUFFER);
+			mem = (float *)glMapBufferRange(GL_ARRAY_BUFFER, 0, count*sizeof(float) * 4, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_WRITE_BIT);
+			memcpy(mem, colPtr, count*sizeof(float) * 4);
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+	}
+
+	void GLParticleRendererDoubleVao::generate(ParticleSystem *sys, bool)
+	{
+		assert(sys != nullptr);
+
+		m_system = sys;
+
+		const size_t count = sys->numAllParticles();
+
+		generateBuffers(m_doubleVao[0], m_doubleBufPos[0], m_doubleBufCol[0], count, nullptr, nullptr);
+		generateBuffers(m_doubleVao[1], m_doubleBufPos[1], m_doubleBufCol[1], count, nullptr, nullptr);
+		m_id = 0;
+	}
+
+	void GLParticleRendererDoubleVao::destroy()
+	{
+		destroyBuffer(m_doubleBufPos[0]);
+		destroyBuffer(m_doubleBufPos[1]);
+		destroyBuffer(m_doubleBufCol[0]);
+		destroyBuffer(m_doubleBufCol[1]);
+	}
+
+	void GLParticleRendererDoubleVao::update()
+	{
+		assert(m_system != nullptr);
+		assert(m_doubleBufPos[m_id] > 0 && m_doubleBufCol[m_id] > 0);
+
+		const size_t count = m_system->numAliveParticles();
+		if (count > 0)
+		{
+			float *posPtr = (float *)(m_system->finalData()->m_pos);
+			float *colPtr = (float *)(m_system->finalData()->m_col);
+
+			glBindBuffer(GL_ARRAY_BUFFER, m_doubleBufPos[m_id]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float) * 4, posPtr);
+
+			glBindBuffer(GL_ARRAY_BUFFER, m_doubleBufCol[m_id]);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, count*sizeof(float) * 4, colPtr);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+	}
+
+	void GLParticleRendererDoubleVao::render()
+	{
+		glBindVertexArray(m_doubleVao[1 - m_id]);
 
 		const size_t count = m_system->numAliveParticles();
 		if (count > 0)
 			glDrawArrays(GL_POINTS, 0, count);
 
 		glBindVertexArray(0);
+
+		m_id = 1 - m_id;
+	}
+
+	void GLParticleRendererPersistent::generate(ParticleSystem *sys, bool)
+	{
+		assert(sys != nullptr);
+
+		m_system = sys;
+
+		const size_t count = sys->numAllParticles();
+
+		generateBuffers(m_vao, m_bufPos, m_bufCol, count, &m_mappedPosBuf, &m_mappedColBuf);
+		m_id = 0;
+	}
+
+	void GLParticleRendererPersistent::update()
+	{
+		assert(m_system != nullptr);
+		assert(m_bufPos > 0 && m_bufCol > 0);
+
+		const size_t count = m_system->numAliveParticles();
+		if (count > 0)
+		{
+			float *posPtr = (float *)(m_system->finalData()->m_pos);
+			float *colPtr = (float *)(m_system->finalData()->m_col);
+			const size_t maxCount = m_system->numAllParticles();
+			
+			float *mem = (float *)m_mappedPosBuf + m_id*maxCount * 4;
+			memcpy(mem, posPtr, count*sizeof(float) * 4);
+			mem = (float *)m_mappedColBuf + m_id*maxCount * 4;
+			memcpy(mem, colPtr, count*sizeof(float) * 4);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+	}
+
+	void GLParticleRendererPersistent::render()
+	{
+		glBindVertexArray(m_vao);
+
+		const size_t count = m_system->numAliveParticles();
+		const size_t maxCount = m_system->numAllParticles();
+		if (count > 0)
+			glDrawArrays(GL_POINTS, m_id*maxCount, count);
+
+		glBindVertexArray(0);
+
+		m_id = (m_id + 1) % 3;
 	}
 }
-/*
-First of all, I don't really understand why you use pos.x + 1.
 
-Next, like Nathan said, you shouldn't use the clip-space point, but the eye-space point. This means you only use the modelview-transformed point (without projection) to compute the distance.
 
-uniform mat4 MV;       //modelview matrix
-
-vec3 eyePos = MV * vec4(pos.x, pos.y, 0.5, 1);
-Furthermore I don't completely understand your attenuation computation. At the moment a higher constAtten value means less attenuation. Why don't you just use the model that OpenGL's deprecated point parameters used:
-
-float dist = length(eyePos);   //since the distance to (0,0,0) is just the length
-float attn = inversesqrt(constAtten + linearAtten*dist + quadAtten*dist*dist);
-EDIT: But in general I think this attenuation model is not a good way, because often you just want the sprite to keep its object space size, which you have quite to fiddle with the attenuation factors to achieve that I think.
-
-A better way is to input its object space size and just compute the screen space size in pixels (which is what gl_PointSize actually is) based on that using the current view and projection setup:
-
-uniform mat4 MV;                //modelview matrix
-uniform mat4 P;                 //projection matrix
-uniform float spriteWidth;      //object space width of sprite (maybe an per-vertex in)
-uniform float screenWidth;      //screen width in pixels
-
-vec4 eyePos = MV * vec4(pos.x, pos.y, 0.5, 1);
-vec4 projCorner = P * vec4(0.5*spriteWidth, 0.5*spriteWidth, eyePos.z, eyePos.w);
-gl_PointSize = screenWidth * projCorner.x / projCorner.w;
-gl_Position = P * eyePos;
-This way the sprite always gets the size it would have when rendered as a textured quad with a width of spriteWidth.
-
-EDIT: Of course you also should keep in mind the limitations of point sprites. A point sprite is clipped based of its center position. This means when its center moves out of the screen, the whole sprite disappears. With large sprites (like in your case, I think) this might really be a problem.
-
-Therefore I would rather suggest you to use simple textured quads. This way you circumvent this whole attenuation problem, as the quads are just transformed like every other 3d object. You only need to implement the rotation toward the viewer, which can either be done on the CPU or in the vertex shader
-*/
 

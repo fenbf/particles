@@ -9,16 +9,64 @@ namespace particles
 	protected:
 		ParticleSystem *m_system{ nullptr };
 
-		unsigned int m_bufPos{ 0 };
-		unsigned int m_bufCol{ 0 };
-		unsigned int m_vao{ 0 };
+		unsigned int m_bufPos;
+		unsigned int m_bufCol;
+		unsigned int m_vao;
 	public:
 		GLParticleRenderer() { }
 		~GLParticleRenderer() { destroy(); }
 
-		void generate(ParticleSystem *sys, bool useQuads) override;
-		void destroy() override;
+		virtual void generate(ParticleSystem *sys, bool useQuads) override;
+		virtual void destroy() override;
+		virtual void update() override;
+		virtual void render() override;
+	};
+
+	class GLParticleRendererUseMap : public GLParticleRenderer
+	{
+	protected:
+		ParticleSystem *m_system{ nullptr };
+
+	public:
+		GLParticleRendererUseMap() { }
+		~GLParticleRendererUseMap() { destroy(); }
+
 		void update() override;
-		void render() override;
+	};
+
+	class GLParticleRendererDoubleVao : public GLParticleRenderer
+	{
+	protected:
+		ParticleSystem *m_system{ nullptr };
+
+		unsigned int m_doubleBufPos[2];
+		unsigned int m_doubleBufCol[2];
+		unsigned int m_doubleVao[2];
+		unsigned int m_id;
+	public:
+		GLParticleRendererDoubleVao() { }
+		~GLParticleRendererDoubleVao() { destroy(); }
+
+		virtual void generate(ParticleSystem *sys, bool useQuads) override;
+		virtual void destroy() override;
+		virtual void update() override;
+		virtual void render() override;
+	};
+
+	class GLParticleRendererPersistent : public GLParticleRenderer
+	{
+	protected:
+		ParticleSystem *m_system{ nullptr };
+
+		unsigned int m_id;
+		float *m_mappedPosBuf = nullptr;
+		float *m_mappedColBuf = nullptr;
+	public:
+		GLParticleRendererPersistent() { }
+		~GLParticleRendererPersistent() { destroy(); }
+
+		virtual void generate(ParticleSystem *sys, bool useQuads) override;
+		virtual void update() override;
+		virtual void render() override;
 	};
 }

@@ -13,7 +13,7 @@ public:
 
 	// creates the effect with desired num of particles, (0 means default for the effect)
 	virtual bool initialize(size_t numParticles) = 0;
-	virtual bool initializeRenderer() = 0;
+	virtual bool initializeRenderer(const char *name) = 0;
 	virtual void reset() = 0;
 	virtual void clean() = 0;
 	virtual void addUI() = 0;

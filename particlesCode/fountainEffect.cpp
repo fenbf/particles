@@ -58,9 +58,9 @@ bool FountainEffect::initialize(size_t numParticles)
 	return true;
 }
 
-bool FountainEffect::initializeRenderer()
+bool FountainEffect::initializeRenderer(const char *name)
 {
-	m_renderer = particles::RendererFactory::create("gl");
+	m_renderer = particles::RendererFactory::create(name);
 	m_renderer->generate(m_system.get(), false);
 
 	return true;
