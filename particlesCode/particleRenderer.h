@@ -17,6 +17,9 @@ namespace particles
 		virtual void destroy() = 0;
 		virtual void update() = 0;
 		virtual void render() = 0;
+
+		IParticleRenderer(const IParticleRenderer &) = delete;
+		IParticleRenderer & operator = (const IParticleRenderer &) = delete;
 	};
 
 	class RendererFactory

@@ -200,6 +200,8 @@ void cleanUp()
 			std::cout << "avg gpu render time: " << effectInfo[i].gpuRender.getAverageTime() << std::endl;
 			std::cout << "avg fps:             " << effectInfo[i].avgFps / effectInfo[i].frameCount << std::endl;
 			std::cout << "avg time per frame:  " << effectInfo[i].totalTime / effectInfo[i].frameCount << std::endl;
+			std::cout << "time per effect:      " << effectInfo[i].totalTime << std::endl;
+			std::cout << "frames for effect      " << effectInfo[i].frameCount << std::endl;
 		}
 		else
 			std::cout << "no data..." << std::endl;
@@ -280,16 +282,17 @@ void updateScene(double deltaTime)
 
 	if (benchmarkMode)
 	{
-		const double TIME_PER_EFFECT = 10.0;
+		const double TIME_PER_EFFECT = 5.0;
 
-		if (Globals::AppTimeInSec > TIME_PER_EFFECT && gCurrentEffectID < 1)
-			gSelectedEffect = 1;
-
-		if (Globals::AppTimeInSec > TIME_PER_EFFECT*2.0 && gCurrentEffectID < 2)
-			gSelectedEffect = 2;
-
-		if (Globals::AppTimeInSec > TIME_PER_EFFECT*3.0)
-			glutLeaveMainLoop();
+		if (Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime > TIME_PER_EFFECT)
+		{
+			if (gCurrentEffectID == 0)
+				gSelectedEffect = 1;
+			else if (gCurrentEffectID == 1)
+				gSelectedEffect = 2;
+			else if (gSelectedEffect == 2)
+				glutLeaveMainLoop();
+		}
 	}
 
 	if (gSelectedEffect != gCurrentEffectID)

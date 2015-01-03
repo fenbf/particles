@@ -24,9 +24,6 @@ namespace particles
 
 	class GLParticleRendererUseMap : public GLParticleRenderer
 	{
-	protected:
-		ParticleSystem *m_system{ nullptr };
-
 	public:
 		GLParticleRendererUseMap() { }
 		~GLParticleRendererUseMap() { destroy(); }
@@ -37,8 +34,6 @@ namespace particles
 	class GLParticleRendererDoubleVao : public GLParticleRenderer
 	{
 	protected:
-		ParticleSystem *m_system{ nullptr };
-
 		unsigned int m_doubleBufPos[2];
 		unsigned int m_doubleBufCol[2];
 		unsigned int m_doubleVao[2];
@@ -56,8 +51,6 @@ namespace particles
 	class GLParticleRendererPersistent : public GLParticleRenderer
 	{
 	protected:
-		ParticleSystem *m_system{ nullptr };
-
 		unsigned int m_id;
 		float *m_mappedPosBuf = nullptr;
 		float *m_mappedColBuf = nullptr;

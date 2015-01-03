@@ -61,6 +61,7 @@ bool TunnelEffect::initialize(size_t numParticles)
 bool TunnelEffect::initializeRenderer(const char *name)
 {
 	m_renderer = particles::RendererFactory::create(name);
+
 	if (!m_renderer)
 		return false;
 
