@@ -55,8 +55,6 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 
 #ifdef USE_ONLY_CORE_OPENGL_PROFILE
-	glutInitContextVersion(4, 4);
-	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 #endif
 
@@ -85,7 +83,7 @@ int main(int argc, char **argv)
 
 
     // random:
-    srand((unsigned int)time(NULL));   
+    srand((unsigned int)time(nullptr));   
 
 
 	//
@@ -96,12 +94,12 @@ int main(int argc, char **argv)
 	
 #ifdef _EX_USE_ANTTWEAKBAR
     #ifdef USE_ONLY_CORE_OPENGL_PROFILE
-        TwInit(TW_OPENGL_CORE, NULL);
+        TwInit(TW_OPENGL_CORE, nullptr);
     #else
-	    TwInit(TW_OPENGL, NULL);
+	    TwInit(TW_OPENGL, nullptr);
     #endif
         Globals::MainTweakBar = TwNewBar("TweakBar");
-        TwAddVarRO(Globals::MainTweakBar, "FPS", TW_TYPE_FLOAT, &Globals::Fps, NULL);
+        TwAddVarRO(Globals::MainTweakBar, "FPS", TW_TYPE_FLOAT, &Globals::Fps, nullptr);
 #endif
 
 	//

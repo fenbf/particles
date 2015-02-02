@@ -13,7 +13,7 @@ unsigned int Globals::MainWindowHeight = WND_START_HEIGHT;
 
 #ifdef _EX_USE_ANTTWEAKBAR
 	bool Globals::ShowUI = true;
-	TwBar *Globals::MainTweakBar = NULL;
+	TwBar *Globals::MainTweakBar = nullptr;
 #else
 	bool Globals::ShowUI = false;
 #endif

@@ -3,12 +3,12 @@
 
 #include <string>
 #include <map>
-
+ 
 template <typename T> std::shared_ptr<particles::IParticleRenderer> createRenderer() { return std::make_shared<T>(); }
 
 namespace particles
 {
-	std::unique_ptr<std::map<std::string, std::shared_ptr<IParticleRenderer>(*)()>> RendererFactory::s_generatorMap;
+	std::unique_ptr<RendererFactory::MapOfRendererGenerators> RendererFactory::s_generatorMap;
 
 	void RendererFactory::initGeneratorMap()
 	{

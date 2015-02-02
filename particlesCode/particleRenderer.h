@@ -24,8 +24,10 @@ namespace particles
 
 	class RendererFactory
 	{
+		using MapOfRendererGenerators = std::map < std::string, std::shared_ptr<IParticleRenderer>(*)() >;
+
 	protected:
-		static std::unique_ptr<std::map<std::string, std::shared_ptr<IParticleRenderer>(*)()>> s_generatorMap;
+		static std::unique_ptr<MapOfRendererGenerators> s_generatorMap;
 		static void initGeneratorMap();
 	public:
 		static std::shared_ptr<IParticleRenderer> create(const char *name);

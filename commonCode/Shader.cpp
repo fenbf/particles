@@ -34,9 +34,9 @@ Shader::~Shader()
 ///////////////////////////////////////////////////////////////////////////////
 bool Shader::loadFromFile(const char *fileName, const char *name)
 {
-    const char *vs = readAllTextFromFile(fileName);
+	const char *fileContent = readAllTextFromFile(fileName);
 
-    if (vs == NULL)
+	if (fileContent == nullptr)
     {
         LOG_ERROR("cannot load shader from file %s", logger::fileNameFromPath((char *)fileName));
         return false;
@@ -46,12 +46,12 @@ bool Shader::loadFromFile(const char *fileName, const char *name)
         glDeleteShader(mId);
 
     mId = glCreateShader(static_cast<GLenum>(mType));
-    glShaderSource(mId, 1, &vs, NULL);    
+	glShaderSource(mId, 1, &fileContent, nullptr);
 
-    free((void *)vs);
+	delete [] fileContent;
 
     // assign name:
-    if (name == NULL)
+    if (name == nullptr)
         mName = std::string(logger::fileNameFromPath((char *)fileName));
     else
         mName = std::string(name);
@@ -67,10 +67,10 @@ void Shader::loadFromSource(const char *source, const char *name)
 
     mId = glCreateShader(static_cast<GLenum>(mType));
 
-    glShaderSource(mId, 1, &source, NULL); 
+    glShaderSource(mId, 1, &source, nullptr); 
 
     // assign name:
-    if (name == NULL)
+    if (name == nullptr)
         mName = std::string("FROM SOURCE");
     else
         mName = std::string(name);
@@ -79,7 +79,7 @@ void Shader::loadFromSource(const char *source, const char *name)
 ///////////////////////////////////////////////////////////////////////////////
 bool Shader::compile()
 {
-    assert(mId > 0 && "id is null so the shader source should be loaded first!");
+    assert(mId > 0 && "id is nullptr so the shader source should be loaded first!");
 
     glCompileShader(mId);
 
@@ -147,12 +147,12 @@ void Shader::logShaderInfo()
 // from Lighthouse3D tutorial
 const char *readAllTextFromFile(const char *fname) 
 {
-    FILE *fp;
-    char *content = NULL;
+	FILE *fp = nullptr;
+	char *content = nullptr;
 
     int count=0;
 
-    if (fname == NULL) return NULL;
+	if (fname == nullptr) return nullptr;
 
 #ifdef _MSC_VER
     fopen_s(&fp, fname,"rt");
@@ -160,7 +160,7 @@ const char *readAllTextFromFile(const char *fname)
     fp = fopen(fname, "rt");
 #endif
 
-    if (fp == NULL) return NULL;
+	if (fp == nullptr) return nullptr;
 
     fseek(fp, 0, SEEK_END);
     count = ftell(fp);
@@ -168,7 +168,7 @@ const char *readAllTextFromFile(const char *fname)
 
     if (count > 0) 
     {
-        content = (char *)malloc(sizeof(char) * (count+1));
+        content = new char[(count+1)];
         if (content)
         {
             count = (int)fread(content,sizeof(char), count, fp);
