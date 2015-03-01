@@ -48,12 +48,18 @@ namespace particles
 		virtual void render() override;
 	};
 
+	struct Vertex
+	{
+		float x, y, z;
+		unsigned char r, g, b, a;
+	};
+
 	class GLParticleRendererPersistent : public GLParticleRenderer
 	{
 	protected:
 		unsigned int m_id;
-		float *m_mappedPosBuf = nullptr;
-		float *m_mappedColBuf = nullptr;
+		Vertex *m_ptr = nullptr;
+
 	public:
 		GLParticleRendererPersistent() { }
 		~GLParticleRendererPersistent() { destroy(); }

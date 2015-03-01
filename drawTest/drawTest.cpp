@@ -196,8 +196,8 @@ void cleanUp()
 			std::cout << "avg cpu update time: " << effectInfo[i].cpuParticlesUpdate.getAverage() << std::endl;
 			std::cout << "avg cpu buffer time: " << effectInfo[i].cpuBuffersUpdate.getAverage() << std::endl;
 
-			std::cout << "avg gpu update time: " << effectInfo[i].gpuUpdate.getAverageTime() << std::endl;
-			std::cout << "avg gpu render time: " << effectInfo[i].gpuRender.getAverageTime() << std::endl;
+			//std::cout << "avg gpu update time: " << effectInfo[i].gpuUpdate.getAverageTime() << std::endl;
+			//std::cout << "avg gpu render time: " << effectInfo[i].gpuRender.getAverageTime() << std::endl;
 			std::cout << "avg fps:             " << effectInfo[i].avgFps / effectInfo[i].frameCount << std::endl;
 			std::cout << "avg time per frame:  " << effectInfo[i].totalTime / effectInfo[i].frameCount << std::endl;
 			std::cout << "time per effect:      " << effectInfo[i].totalTime << std::endl;
@@ -299,7 +299,7 @@ void updateScene(double deltaTime)
 	{
 		effectInfo[gCurrentEffectID].totalTime += Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime;
 
-		std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
+		//std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
 		gCurrentEffect->removeUI();
 		gCurrentEffectID = gSelectedEffect;
 		gCurrentEffect = effectInfo[gCurrentEffectID].effect.get();
@@ -316,9 +316,9 @@ void updateScene(double deltaTime)
 	effectInfo[gCurrentEffectID].cpuParticlesUpdate.end();
 
 	effectInfo[gCurrentEffectID].cpuBuffersUpdate.begin();
-		effectInfo[gCurrentEffectID].gpuUpdate.begin();
+		//effectInfo[gCurrentEffectID].gpuUpdate.begin();
 			gCurrentEffect->gpuUpdate(deltaTime);
-		effectInfo[gCurrentEffectID].gpuUpdate.end();
+		//effectInfo[gCurrentEffectID].gpuUpdate.end();
 	effectInfo[gCurrentEffectID].cpuBuffersUpdate.end();
 
 	cpuParticlesUpdateTime = effectInfo[gCurrentEffectID].cpuParticlesUpdate.m_time;
@@ -330,8 +330,8 @@ void updateScene(double deltaTime)
 	effectInfo[gCurrentEffectID].avgFps += Globals::Fps;
 	effectInfo[gCurrentEffectID].frameCount++;
 
-	effectInfo[gCurrentEffectID].gpuUpdate.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
-	gpuBuffersUpdateTime = effectInfo[gCurrentEffectID].gpuUpdate.getTime();
+	//effectInfo[gCurrentEffectID].gpuUpdate.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+	//gpuBuffersUpdateTime = effectInfo[gCurrentEffectID].gpuUpdate.getTime();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -339,6 +339,7 @@ void renderScene()
 {	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
+	glDepthMask(FALSE);
 
 	//
 	// camera
@@ -354,17 +355,18 @@ void renderScene()
 	mProgram.uniformMatrix4f("matProjection", glm::value_ptr(camera.projectionMatrix));
 	mProgram.uniformMatrix4f("matModelview", glm::value_ptr(camera.modelviewMatrix));
 
+	glEnable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	effectInfo[gCurrentEffectID].gpuRender.begin();
+	//effectInfo[gCurrentEffectID].gpuRender.begin();
 		gCurrentEffect->render();
-	effectInfo[gCurrentEffectID].gpuRender.end();
+	//effectInfo[gCurrentEffectID].gpuRender.end();
 
 	glDisable(GL_BLEND);
 
     mProgram.disable();
 	
-	effectInfo[gCurrentEffectID].gpuRender.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
-	gpuRenderTime = effectInfo[gCurrentEffectID].gpuRender.getTime();
+	//effectInfo[gCurrentEffectID].gpuRender.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
+	//gpuRenderTime = effectInfo[gCurrentEffectID].gpuRender.getTime();
 }
