@@ -7,7 +7,7 @@ bool TunnelEffect::initialize(size_t numParticles)
 	//
 	// particles
 	//
-	const size_t NUM_PARTICLES = numParticles == 0 ? 500000 : numParticles;
+	const size_t NUM_PARTICLES = numParticles == 0 ? IEffect::DEFAULT_PARTICLE_COUNT : numParticles;
 	m_system = std::make_shared<particles::ParticleSystem>(NUM_PARTICLES);
 
 	//

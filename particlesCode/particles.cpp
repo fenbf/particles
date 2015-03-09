@@ -171,4 +171,5 @@ namespace particles
 	{
 		return 2 * ParticleData::computeMemoryUsage(p.m_particles);
 	}
+
 }

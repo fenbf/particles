@@ -75,6 +75,9 @@ double gpuRenderTime = 0.0;
 bool gAnimationOn = true;
 bool benchmarkMode = false;
 
+const double SKIP_TIME = 2.0;
+const double TIME_PER_EFFECT = 5.0;
+
 const char *searchArgv(int argc, char **argv, const char *key, const char *defaultValue)
 {
 	for (int i = 1; i < argc; ++i)
@@ -185,7 +188,7 @@ void cleanUp()
 {
 	const std::vector<std::string> EFFECTS_NAME{ "tunnel", "attractors", "fountain" };
 
-	effectInfo[gCurrentEffectID].totalTime += Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime;
+	std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
 
 	// show average times:
 	for (int i = 0; i < 3; ++i)
@@ -193,14 +196,16 @@ void cleanUp()
 		std::cout << EFFECTS_NAME[i] << std::endl;
 		if (effectInfo[i].frameCount > 10)
 		{
-			std::cout << "avg cpu update time: " << effectInfo[i].cpuParticlesUpdate.getAverage() << std::endl;
-			std::cout << "avg cpu buffer time: " << effectInfo[i].cpuBuffersUpdate.getAverage() << std::endl;
+			//std::cout << "avg cpu update time: " << effectInfo[i].cpuParticlesUpdate.getAverage() << std::endl;
+			//std::cout << "avg cpu buffer time: " << effectInfo[i].cpuBuffersUpdate.getAverage() << std::endl;
 
 			//std::cout << "avg gpu update time: " << effectInfo[i].gpuUpdate.getAverageTime() << std::endl;
 			//std::cout << "avg gpu render time: " << effectInfo[i].gpuRender.getAverageTime() << std::endl;
+			double totalTime = effectInfo[i].totalTime;
 			std::cout << "avg fps:             " << effectInfo[i].avgFps / effectInfo[i].frameCount << std::endl;
-			std::cout << "avg time per frame:  " << effectInfo[i].totalTime / effectInfo[i].frameCount << std::endl;
-			std::cout << "time per effect:      " << effectInfo[i].totalTime << std::endl;
+			std::cout << "avg fps:             " << effectInfo[i].frameCount / totalTime << std::endl;
+			std::cout << "avg time per frame:  " << totalTime / effectInfo[i].frameCount << std::endl;
+			std::cout << "time per effect:      " << totalTime << std::endl;
 			std::cout << "frames for effect      " << effectInfo[i].frameCount << std::endl;
 		}
 		else
@@ -274,6 +279,13 @@ void processMousePassiveMotion(int x, int y)
 	// todo: add some custom code...	
 }
 
+void CalcTotalTimeForEffect()
+{
+	effectInfo[gCurrentEffectID].totalTime += Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime - SKIP_TIME;
+}
+
+void CalcTotalTimeForEffect();
+
 ///////////////////////////////////////////////////////////////////////////////
 void updateScene(double deltaTime) 
 {
@@ -282,10 +294,9 @@ void updateScene(double deltaTime)
 
 	if (benchmarkMode)
 	{
-		const double TIME_PER_EFFECT = 5.0;
-
-		if (Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime > TIME_PER_EFFECT)
+		if (Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime > TIME_PER_EFFECT+SKIP_TIME)
 		{
+			CalcTotalTimeForEffect();
 			if (gCurrentEffectID == 0)
 				gSelectedEffect = 1;
 			else if (gCurrentEffectID == 1)
@@ -297,9 +308,7 @@ void updateScene(double deltaTime)
 
 	if (gSelectedEffect != gCurrentEffectID)
 	{
-		effectInfo[gCurrentEffectID].totalTime += Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime;
-
-		//std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
+		std::cout << "ratio: " << gCurrentEffect->aliveToAllRatio() << std::endl;
 		gCurrentEffect->removeUI();
 		gCurrentEffectID = gSelectedEffect;
 		gCurrentEffect = effectInfo[gCurrentEffectID].effect.get();
@@ -327,8 +336,11 @@ void updateScene(double deltaTime)
 	gNumParticles = gCurrentEffect->numAllParticles();
 	gNumAlive = gCurrentEffect->numAliveParticles();
 
-	effectInfo[gCurrentEffectID].avgFps += Globals::Fps;
-	effectInfo[gCurrentEffectID].frameCount++;
+	if (Globals::AppTimeInSec - effectInfo[gCurrentEffectID].startTime > SKIP_TIME)
+	{
+		effectInfo[gCurrentEffectID].avgFps += Globals::Fps;
+		effectInfo[gCurrentEffectID].frameCount++;
+	}
 
 	//effectInfo[gCurrentEffectID].gpuUpdate.updateResults(GpuTimerQuery::WaitOption::WaitForResults);
 	//gpuBuffersUpdateTime = effectInfo[gCurrentEffectID].gpuUpdate.getTime();

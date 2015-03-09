@@ -6,6 +6,7 @@ class IEffect
 {
 public:
 	static const size_t DEFAULT_PARTICLE_NUM_FLAG = 0;	// for initialize method
+	static const size_t DEFAULT_PARTICLE_COUNT = 500000;	// 500k particles
 	//enum Name { };
 public:
 	IEffect() { }
